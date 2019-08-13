@@ -1,6 +1,12 @@
-SENTRY_URL = ''
-DATABASE_KEY = ''
-
-SECRET_KEY = ''
 TEST_USER = ''
 ENVIRON = ''
+SECRET_KEY = ''
+WSAPI_SECRET = ''
+
+SENTRY_URL = ''
+ORACLE_CONNECTION = {
+    'USER': '',
+    'PASSWORD': '',
+    'HOST': '',
+    'SERVICE_NAME': ''
+}
