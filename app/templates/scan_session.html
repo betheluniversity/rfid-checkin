@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block body_content %}
+    <h2>Welcome!</h2>
+    <p>Scan your id to sign in.</p>
+    <p>(TODO: add the bootstrap alerts whenever someone signs in)</p>
+{% endblock %}
+
+{% block additional_js %}
+    <script type="text/javascript">
+        $(document).ready(function(){
+            var input = "";
+            $(document).on('keydown', function(key){
+                if(key.keyCode == 13){
+                    var url = "{{ url_for('View:verify_scanner') }}";
+                    var scannedInput = {
+                        'scan': input,
+                        'session_id': "{{ session_id }}"
+                    };
+                    $.post(url, scannedInput, function(data){
+                        alert(data);
+                        input = "";
+                    });
+                    input = "";
+                }else{
+                    input = input + key.key;
+                }
+            });
+        });
+    </script>
+{% endblock %}

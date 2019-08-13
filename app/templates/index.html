@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block body_content %}
+    <h2>Title</h2>
+    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+    <div>
+        {# TODO: finish the modal! #}
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">+ Create Session</button>
+        {% for rfid_session in rfid_sessions %}
+            <div class='card session' data-session-id="{{ rfid_session.get('id') }}">
+                <h3>{{ rfid_session.get('form_name') }}</h3>
+                {% if rfid_session.get('description') != '' %}
+                    <p>{{ rfid_session.get('description') }}</p>
+                {% endif %}
+                <p><a href="#" class="btn btn-primary">Edit Details</a></p>
+
+                {% if rfid_session.get('status') == 'Created' %}
+                {# Not yet opened #}
+                    <p><button id="start-session" class="btn btn-primary">Start Session</button></p>
+                {% elif rfid_session.get('status') == 'Open' %}
+                {# Opened #}
+                    <p><a href="{{ url_for('View:scan_session', session_id=rfid_session.get('id')) }}" class="btn btn-primary">Go to Session</a></p>
+                    <p><a href="#" class="btn btn-primary">Archive Session (change this?)</a></p>
+                {% elif rfid_session.get('status') == 'Archive' %}
+                {# Closed #}
+                    <p><a href="#" class="btn btn-primary">Reopen Session</a></p>
+                    <p><a href="#" class="btn btn-primary">Download CSV</a></p>
+                {% else %}
+                    {# TODO: add a better error message here #}
+                    ERROR
+                {% endif %}
+                {# TODO: add a modal double check here #}
+                <p><button id="delete-session" class="btn btn-danger">Delete Session</button></p>
+            </div>
+        {% endfor %}
+    </div>
+
+
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <form class="form" action="{{ url_for('View:create_new_session') }}" method="POST">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Create Session</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                  <label for="form_name">Name<input type="text" name="form_name"/></label>
+                  <br>
+                  <label for="form_description">Description<textarea name="form_description" rows="10" cols="50" maxlength="1000"></textarea></label>
+              </div>
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                  <input type="submit" class="btn btn-primary" />
+              </div>
+          </form>
+        </div>
+      </div>
+    </div>
+{% endblock %}

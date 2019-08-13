@@ -1,0 +1,7 @@
+cx_Oracle
+Flask
+Flask-Classy
+Jinja2
+raven
+requests
+sqlalchemy>=1.3.0
