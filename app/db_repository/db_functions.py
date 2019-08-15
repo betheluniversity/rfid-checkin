@@ -25,9 +25,9 @@ class Banner():
         results = self.engine.execute("""
             UPDATE BU_RFID_SCANNER_SESSIONS
             SET STATUS='Open'
-            WHERE id='{}' and STATUS='Created'
+            WHERE id='{}' and (STATUS='Created' or STATUS='Closed')
         """.format(session_id))
-        return
+        return True
 
     def close_session(self, session_id):
         results = self.engine.execute("""
@@ -47,13 +47,18 @@ class Banner():
 
     def create_new_session(self, username, form_name, form_description):
         results = self.engine.execute("""
-            INSERT INTO BU_RFID_SCANNER_SESSIONS (FORM_NAME, OWNER_USERNAME, FORM_DESCRIPTION)
+            INSERT INTO BU_RFID_SCANNER_SESSIONS (FORM_NAME, OWNER_USERNAME, DESCRIPTION)
             VALUES('{}', '{}', '{}')
         """.format(form_name, username, form_description))
         return True
 
-    def edit_session(self):
-        pass
+    def edit_session(self, session_id, form_name, form_description):
+        results = self.engine.execute("""
+            UPDATE BU_RFID_SCANNER_SESSIONS
+            SET FORM_NAME='{}',DESCRIPTION='{}'
+            WHERE id='{}'
+        """.format(form_name, form_description, session_id))
+        return True
 
     def scan_user(self, session_id, card_id, username, first_name, last_name):
         results = self.engine.execute("""
@@ -61,5 +66,22 @@ class Banner():
             VALUES({}, {}, '{}', '{}', '{}', CURRENT_TIMESTAMP)
         """.format(session_id, card_id, username, first_name, last_name))
         return True
+
+    def get_session(self, session_id):
+        results = self.engine.execute("""
+            SELECT * 
+            FROM BU_RFID_SCANNER_SESSIONS 
+            WHERE ID={} AND DELETED='N'
+        """.format(session_id))
+        return self._result_proxy_to_dicts(results)[0]
+
+    def get_session_data_for_csv(self, session_id):
+        results = self.engine.execute("""
+            SELECT SCAN_DATETIME, FIRST_NAME, LAST_NAME, USERNAME, CARD_ID
+            FROM BU_RFID_SCANNER_SCANS
+            WHERE SESSION_ID={}
+            ORDER BY SCAN_DATETIME
+        """.format(session_id))
+        return self._result_proxy_to_dicts(results)
 
     

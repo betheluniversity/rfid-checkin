@@ -1,7 +1,9 @@
+import csv
+from datetime import datetime
+from io import StringIO
 import re
 
-from flask import render_template, request, session, abort, make_response, redirect, url_for
-from flask import json as fjson
+from flask import render_template, request, session, redirect, url_for, Response, stream_with_context
 from flask_classy import FlaskView, route
 
 from app import app
@@ -10,13 +12,14 @@ from app.wsapi import WSAPIController
 
 
 # TODO: create alerts
-# 2 + 3 + 5
+# 2 + 3 + 5 + 3
 class View(FlaskView):
 
     def __init__(self):
         self.banner = Banner()
         self.wsapi = WSAPIController()
 
+    # todo: add in aborts if you aren't the correct user. Maybe consider making it a wrapper?
     def before_request(self, name, **kwargs):
         if not session.get('username', None):
             if app.config['ENVIRON'] == 'prod':
@@ -29,60 +32,58 @@ class View(FlaskView):
         rfid_sessions = self.banner.get_sessions_for_user(session.get('username'))
         return render_template('index.html', **locals())
 
-    #todo: create the modal
-    @route('/create-new-session', methods=['POST'])
+    @route('/create-new-session/', methods=['POST'])
     def create_new_session(self):
         rform = request.form
+        session_id = rform.get('session_id')
         form_name = rform.get('form_name')
         form_description = rform.get('form_description')
-        status = self.banner.create_new_session(session.get('username'), form_name, form_description)
+
+        if session_id:
+            # edit
+            status = self.banner.edit_session(session_id, form_name, form_description)
+        else:
+            # create new
+            status = self.banner.create_new_session(session.get('username'), form_name, form_description)
 
         if status:
             return redirect(url_for('View:index'))
         else:
             return 'failed'
 
-    #todo: delete the session and any data with it - wait for session data to be input to make testing easier
-    @route('/delete-session/<session_id>', methods=['POST'])
-    def delete_session(self, session_id):
+    @route('/delete-session', methods=['POST'])
+    def delete_session(self):
+        rform = request.form
+        session_id = rform.get('session_id')
+
+        # Currently, we don't delete sessions, we just mark them as "deleted" and then don't display them.
         status = self.banner.delete_session(session_id)
 
         if status:
-            return 'success'
+            return redirect(url_for('View:index'))
         else:
             return 'failed'
 
-    #todo: Wait until create-new-session exists, to leverage the same form
-    @route('/edit-session', methods=['POST'])
-    def edit_session(self):
-        pass
-
-    @route('/archive-session', methods=['POST'])
-    def archive_session(self):
-        rform = request.form
-        session_id = 1
+    @route('/close-session/<session_id>', methods=['GET'])
+    def close_session(self, session_id):
         closed_session = self.banner.close_session(session_id)
-        if not closed_session:
-            return 'failed'
-        return 'success'
+        if closed_session:
+            return redirect(url_for('View:index'))
+        return 'failed'
 
-    @route('/start-session', methods=['POST'])
-    def start_session(self):
-        rform = request.form
-        session_id = rform.get('session_id')
+    # this also does the reopen session
+    @route('/start-session/<session_id>', methods=['GET'])
+    def start_session(self, session_id):
         started_session = self.banner.start_session(session_id)
         if not started_session:
             return 'failed'
-        return redirect(url_for('View.scan_session'))
+        # todo: we might consider not going to the session immediately when it starts. This is confusing
+        return redirect(url_for('View:scan_session', session_id=session_id))
 
     @route('/scan-session/<session_id>', methods=['GET'])
     def scan_session(self, session_id):
+        rfid_session = self.banner.get_session(session_id)
         return render_template('scan_session.html', **locals())
-
-    # todo: write the code to pull in card_id
-    @route('/scan', methods=['POST'])
-    def scan(self):
-        return 'success'
 
     @route('/no-cas/verify-scanner', methods=['post'])
     def verify_scanner(self):
@@ -105,3 +106,38 @@ class View(FlaskView):
             return 'success'
         else:
             return 'failed'
+
+
+    @route('/download-csv/<session_id>', methods=['get'])
+    def download_csv(self, session_id):
+        session = self.banner.get_session(session_id)
+        session_data = self.banner.get_session_data_for_csv(session_id)
+
+        session_name = '{} {}'.format(session.get('form_name'), datetime.now().strftime('%m/%d/%Y'))
+        return self._export_csv(session_data, session_name)
+
+    def _export_csv(self, data, csv_name):
+        def generate():
+            w = StringIO()
+            filewriter = csv.writer(w)
+
+            # get column names and format them
+            data_to_write = []
+            for key in data[0].keys():
+                data_to_write.append(key.replace('_', ' ').title())
+            filewriter.writerow(data_to_write)
+
+            # write each row
+            for row in data:
+                new_row = row.values()
+
+                filewriter.writerow(new_row)
+                yield w.getvalue()
+                w.seek(0)
+                w.truncate(0)
+
+        return Response(
+            stream_with_context(generate()),
+            mimetype='text/csv',
+            headers={"Content-disposition": "attachment; filename=" + csv_name + '.csv'}
+        )

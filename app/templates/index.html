@@ -2,55 +2,82 @@
 
 {% block body_content %}
     <h2>Title</h2>
+    <p>
+    TODO: CSVs. Need to change the format to work with list of lists instead of list of dicts
+    </p>
     <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
     <div>
-        {# TODO: finish the modal! #}
-        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">+ Create Session</button>
+        <button id='create-session' type="button" class="btn btn-primary" data-toggle="modal" data-target="#sessionModal">+ Create Session</button>
         {% for rfid_session in rfid_sessions %}
             <div class='card session' data-session-id="{{ rfid_session.get('id') }}">
-                <h3>{{ rfid_session.get('form_name') }}</h3>
+                <h3 class="form_name">{{ rfid_session.get('form_name') }}</h3>
                 {% if rfid_session.get('description') != '' %}
-                    <p>{{ rfid_session.get('description') }}</p>
+                    <p class="form_description">{{ rfid_session.get('description') }}</p>
                 {% endif %}
-                <p><a href="#" class="btn btn-primary">Edit Details</a></p>
+                <p><button class="btn btn-primary edit-session" data-toggle="modal" data-target="#sessionModal" data-description="{{ rfid_session.get('description') }}" data-name="{{ rfid_session.get('form_name') }}">Edit Details</button></p>
 
                 {% if rfid_session.get('status') == 'Created' %}
-                {# Not yet opened #}
-                    <p><button id="start-session" class="btn btn-primary">Start Session</button></p>
+                    {# Not yet opened #}
+                    <p><a href="{{ url_for('View:start_session', session_id=rfid_session.get('id')) }}" class="btn btn-success">Start Session</a></p>
                 {% elif rfid_session.get('status') == 'Open' %}
-                {# Opened #}
-                    <p><a href="{{ url_for('View:scan_session', session_id=rfid_session.get('id')) }}" class="btn btn-primary">Go to Session</a></p>
-                    <p><a href="#" class="btn btn-primary">Archive Session (change this?)</a></p>
-                {% elif rfid_session.get('status') == 'Archive' %}
-                {# Closed #}
-                    <p><a href="#" class="btn btn-primary">Reopen Session</a></p>
-                    <p><a href="#" class="btn btn-primary">Download CSV</a></p>
+                    {# Opened #}
+                    <p><a href="{{ url_for('View:scan_session', session_id=rfid_session.get('id')) }}" class="btn btn-success">Go to Session</a></p>
+                    <p><a href="{{ url_for('View:close_session', session_id=rfid_session.get('id')) }}" class="btn btn-primary">Close Session</a></p>
+                {% elif rfid_session.get('status') == 'Closed' %}
+                    {# Closed #}
+                    <p><a href="{{ url_for('View:start_session', session_id=rfid_session.get('id')) }}" class="btn btn-success">Reopen Session</a></p>
+                    <p><a href="{{ url_for('View:download_csv', session_id=rfid_session.get('id')) }}" class="btn btn-primary">Download CSV</a></p>
                 {% else %}
                     {# TODO: add a better error message here #}
-                    ERROR
+                    <p>ERROR: Please try reloading the page. If you still have issues, contact the Help Desk at <a href="mailto:helpdesk@bethel.edu">helpdesk@bethel.edu</a>. Thanks!</p>
                 {% endif %}
-                {# TODO: add a modal double check here #}
-                <p><button id="delete-session" class="btn btn-danger">Delete Session</button></p>
+                <p><button class="delete-session btn btn-danger" data-toggle="modal" data-target="#deleteModal">Delete Session</button></p>
             </div>
         {% endfor %}
     </div>
 
 
-    <!-- Modal -->
-    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <!-- Create/Edit Session Modal -->
+    <div class="modal fade" id="sessionModal" tabindex="-1" role="dialog" aria-labelledby="sessionModalLabel" aria-hidden="true">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <form class="form" action="{{ url_for('View:create_new_session') }}" method="POST">
               <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Create Session</h5>
+                <h5 class="modal-title" id="sessionModalLabel">Create Session</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                   <span aria-hidden="true">&times;</span>
                 </button>
               </div>
               <div class="modal-body">
-                  <label for="form_name">Name<input type="text" name="form_name"/></label>
+                  <input id='session_id_field' type="hidden" name="session_id" />
+                  <label for="form_name">Name<input id='form_name_field' type="text" name="form_name"/></label>
                   <br>
-                  <label for="form_description">Description<textarea name="form_description" rows="10" cols="50" maxlength="1000"></textarea></label>
+                  <label for="form_description">Description<textarea id='form_description_field' name="form_description" rows="10" cols="50" maxlength="1000"></textarea></label>
+
+              </div>
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                  <input type="submit" class="btn btn-primary" />
+              </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Delete Session Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <form class="form" action="{{ url_for('View:delete_session') }}" method="POST">
+              <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Delete Session</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                  <p>Are you sure you want to delete this session?</p>
+                  <input id='delete_session_id_field' type="hidden" name="session_id" />
               </div>
               <div class="modal-footer">
                   <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>

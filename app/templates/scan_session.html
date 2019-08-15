@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
 
 {% block body_content %}
-    <h2>Welcome!</h2>
-    <p>Scan your id to sign in.</p>
-    <p>(TODO: add the bootstrap alerts whenever someone signs in)</p>
+    <h2>{{ rfid_session.get('form_name') }}</h2>
+    <p>Welcome! Scan your id to sign in.</p>
+    <p>{{ rfid_session.get('description') }}</p>
 {% endblock %}
 
 {% block additional_js %}
