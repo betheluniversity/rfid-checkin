@@ -17,11 +17,15 @@
 
 <body>
     {% block nav %}{% include 'nav.html' %}{% endblock %}
-     <div>{% block body_content %}{% endblock %}</div>
+    <div class="layout__body">
+        <div class="inner">
+            {% block body_content %}{% endblock %}
+        </div>
+    </div>
 
     <div class="footer">
         <div class="card-body">
-            <p class="card-text">&copy; 2019-{{ now.strftime('%Y') }} Bethel University</p>
+            <p class="card-text">&copy; 2019{% if now.strftime('%Y') != '2019' %}-{{ now.strftime('%Y') }}{% endif %} Bethel University</p>
         </div>
     </div>
 

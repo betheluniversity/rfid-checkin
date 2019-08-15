@@ -1,39 +1,51 @@
 {% extends 'base.html' %}
 
 {% block body_content %}
-    <h2>Title</h2>
-    <p>
-    TODO: CSVs. Need to change the format to work with list of lists instead of list of dicts
-    </p>
-    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-    <div>
+    <div align="center">
+        <h2 class='header'>RFID Scanner Sessions</h2>
+        <p>todo: pull in number of users signed in?</p>
+        <p>Todo list: permissions, format the scan_session page, (get a better name) get on xp to test scanner, update names and styles to be consistent, format homepage (josiah's help), get Ben's thoughts on other features, and ....?</p>
         <button id='create-session' type="button" class="btn btn-primary" data-toggle="modal" data-target="#sessionModal">+ Create Session</button>
-        {% for rfid_session in rfid_sessions %}
-            <div class='card session' data-session-id="{{ rfid_session.get('id') }}">
-                <h3 class="form_name">{{ rfid_session.get('form_name') }}</h3>
-                {% if rfid_session.get('description') != '' %}
-                    <p class="form_description">{{ rfid_session.get('description') }}</p>
-                {% endif %}
-                <p><button class="btn btn-primary edit-session" data-toggle="modal" data-target="#sessionModal" data-description="{{ rfid_session.get('description') }}" data-name="{{ rfid_session.get('form_name') }}">Edit Details</button></p>
+    </div>
+    <hr>
+    <div class="container">
+      <div class="row">
 
-                {% if rfid_session.get('status') == 'Created' %}
-                    {# Not yet opened #}
-                    <p><a href="{{ url_for('View:start_session', session_id=rfid_session.get('id')) }}" class="btn btn-success">Start Session</a></p>
-                {% elif rfid_session.get('status') == 'Open' %}
-                    {# Opened #}
-                    <p><a href="{{ url_for('View:scan_session', session_id=rfid_session.get('id')) }}" class="btn btn-success">Go to Session</a></p>
-                    <p><a href="{{ url_for('View:close_session', session_id=rfid_session.get('id')) }}" class="btn btn-primary">Close Session</a></p>
-                {% elif rfid_session.get('status') == 'Closed' %}
-                    {# Closed #}
-                    <p><a href="{{ url_for('View:start_session', session_id=rfid_session.get('id')) }}" class="btn btn-success">Reopen Session</a></p>
-                    <p><a href="{{ url_for('View:download_csv', session_id=rfid_session.get('id')) }}" class="btn btn-primary">Download CSV</a></p>
-                {% else %}
-                    {# TODO: add a better error message here #}
-                    <p>ERROR: Please try reloading the page. If you still have issues, contact the Help Desk at <a href="mailto:helpdesk@bethel.edu">helpdesk@bethel.edu</a>. Thanks!</p>
-                {% endif %}
-                <p><button class="delete-session btn btn-danger" data-toggle="modal" data-target="#deleteModal">Delete Session</button></p>
+        {% for rfid_session in rfid_sessions %}
+            <div class="col-4 justify-content-start p-2">
+                <div class='card session' data-session-id="{{ rfid_session.get('id') }}" style="height:200px">
+                    <h3 class="form_name" align="center">{{ rfid_session.get('form_name') }}</h3>
+                        {# TODO: decide if we want to display descriptions on the homepage #}
+{#                    {% if rfid_session.get('description') != '' %}#}
+                        <span class="form_description" style="visibility: hidden"></span>
+{#                    {% endif %}#}
+                    <hr>
+                    <div class="container">
+                        <div class="row">
+                            <button class="col-6 btn btn-primary edit-session" data-toggle="modal" data-target="#sessionModal" data-description="{{ rfid_session.get('description') }}" data-name="{{ rfid_session.get('form_name') }}">Edit Details</button>
+
+                            {% if rfid_session.get('status') == 'Created' %}
+                                {# Not yet opened #}
+                                <a href="{{ url_for('View:start_session', session_id=rfid_session.get('id')) }}" class="col-6 btn btn-success">Start Session</a>
+                            {% elif rfid_session.get('status') == 'Open' %}
+                                {# Opened #}
+                                <a href="{{ url_for('View:scan_session', session_id=rfid_session.get('id')) }}" class="col-6 btn btn-success">Go to Session</a>
+                                <a href="{{ url_for('View:close_session', session_id=rfid_session.get('id')) }}" class="col-6 btn btn-primary">Close Session</a>
+                            {% elif rfid_session.get('status') == 'Closed' %}
+                                {# Closed #}
+                                <a href="{{ url_for('View:start_session', session_id=rfid_session.get('id')) }}" class="col-6 btn btn-success">Reopen Session</a>
+                            {% else %}
+                                {# TODO: add a better error message here #}
+                                <p class="col-6">ERROR: Please try reloading the page. If you still have issues, contact the Help Desk at <a href="mailto:helpdesk@bethel.edu">helpdesk@bethel.edu</a>. Thanks!</p>
+                            {% endif %}
+                            <a href="{{ url_for('View:download_csv', session_id=rfid_session.get('id')) }}" class="col-6 btn btn-primary">Download CSV</a>
+                            <button class="col-6 delete-session btn btn-danger" data-toggle="modal" data-target="#deleteModal">Delete Session</button>
+                        </div>
+                    </div>
+                </div>
             </div>
         {% endfor %}
+      </div>
     </div>
 
 

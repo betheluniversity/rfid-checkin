@@ -1,0 +1,31 @@
+.inner {
+	max-width: 1600px;
+	margin: 0 auto;
+	padding-left: 1em;
+	padding-right: 1em;
+}
+
+.bkg--blue {
+	background: #0069aa;
+}
+
+.bkg--navy {
+	background: #0f2c52;
+}
+
+.bkg--white {
+	background: #fff;
+}
+
+#navbarDropdown {
+	color: white;
+}
+
+.navbar-right {
+	position: absolute;
+	right:10px;
+}
+
+.header {
+	padding-top: 1em;
+}

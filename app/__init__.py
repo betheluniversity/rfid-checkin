@@ -1,5 +1,5 @@
 from datetime import datetime
-from flask import Flask, render_template
+from flask import Flask, render_template, make_response, redirect, session
 
 app = Flask(__name__)
 app.config.from_object('config')
@@ -18,6 +18,16 @@ View.register(app, route_base='/')
 @app.route("/main_js")
 def main_js():
     return render_template("/js/main.js")
+
+@app.route("/logout", methods=["GET"])
+def logout():
+    session.clear()
+    resp = make_response(redirect(app.config['LOGOUT_URL']))
+    resp.set_cookie('MOD_AUTH_CAS_S', '', expires=0, path='/')
+    resp.set_cookie('MOD_AUTH_CAS', '', expires=0, path='/')
+    return resp
+
+# TODO: logout
 
 # This makes these variables open to use everywhere
 @app.context_processor

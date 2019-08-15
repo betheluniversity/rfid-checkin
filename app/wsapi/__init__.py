@@ -21,7 +21,15 @@ class WSAPIController:
 
     def get_names_from_username(self, username):
         path = '/username/{0}/names'.format(username)
-        return self.get_hmac_request(path)
+        names = self.get_hmac_request(path).get('0')
+
+        if names.get('prefFirstName'):
+            first_name = names.get('prefFirstName')
+        else:
+            first_name = names.get('firstName')
+        last_name = names.get('lastName')
+
+        return {"first_name": first_name, "last_name": last_name}
 
     def get_user_from_prox(self, card_id):
         path = '/card_id/{0}'.format(card_id)

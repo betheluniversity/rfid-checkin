@@ -12,7 +12,7 @@ from app.wsapi import WSAPIController
 
 
 # TODO: create alerts
-# 2 + 3 + 5 + 3
+# 2 + 3 + 5 + 3 + 3
 class View(FlaskView):
 
     def __init__(self):
@@ -21,12 +21,16 @@ class View(FlaskView):
 
     # todo: add in aborts if you aren't the correct user. Maybe consider making it a wrapper?
     def before_request(self, name, **kwargs):
+        # todo: get name and photo
+
         if not session.get('username', None):
             if app.config['ENVIRON'] == 'prod':
                 session['username'] = request.environ.get('REMOTE_USER')
             else:
                 session['username'] = app.config['TEST_USER']
-        pass
+
+        if not session.get('name', None):
+            session['name'] = self.wsapi.get_names_from_username(session.get('username'))
 
     def index(self):
         rfid_sessions = self.banner.get_sessions_for_user(session.get('username'))
@@ -95,12 +99,9 @@ class View(FlaskView):
         if card_id:
             # todo: clean this snippet up
             username = self.wsapi.get_user_from_prox(card_id).get('username')
-            user_data = self.wsapi.get_names_from_username(username).get('0')
-            if user_data.get('prefFirstName'):
-                first_name = user_data.get('prefFirstName')
-            else:
-                first_name = user_data.get('firstName')
-            last_name = user_data.get('lastName')
+            user_data = self.wsapi.get_names_from_username(username)
+            first_name = user_data.get('first_name')
+            last_name = user_data.get('last_name')
 
             self.banner.scan_user(session_id, card_id, username, first_name, last_name)
             return 'success'
