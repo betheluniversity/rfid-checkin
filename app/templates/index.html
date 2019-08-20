@@ -3,22 +3,38 @@
 {% block body_content %}
     <div align="center">
         <h2 class='header'>RFID Scanner Sessions</h2>
-        <p>todo: pull in number of users signed in?</p>
-        <p>Todo list: permissions, format the scan_session page, (get a better name) get on xp to test scanner, update names and styles to be consistent, format homepage (josiah's help), get Ben's thoughts on other features, and ....?</p>
+        <p>Todo list: Wait for Ben to get a domain name, format homepage, get the footer figured out, make sure scanning works on xp (have to be signed out), and put it on XP</p>
         <button id='create-session' type="button" class="btn btn-primary" data-toggle="modal" data-target="#sessionModal">+ Create Session</button>
     </div>
     <hr>
+
+    {# SHOWS ALERTS #}
+    {% if alert %}
+        {% for a in alert %}
+            <div class="margins">
+                <div class="alert alert-{{ a.type }} alert-dismissible fade show" role="alert">
+                    {{ a.message }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            </div>
+        {% endfor %}
+    {% endif %}
+
     <div class="container">
       <div class="row">
 
         {% for rfid_session in rfid_sessions %}
-            <div class="col-4 justify-content-start p-2">
-                <div class='card session' data-session-id="{{ rfid_session.get('id') }}" style="height:200px">
+            <div class="col-12 col-lg-4 col-md-6 justify-content-start p-2">
+                <div class='card session p-3' data-session-id="{{ rfid_session.get('id') }}">
                     <h3 class="form_name" align="center">{{ rfid_session.get('form_name') }}</h3>
                         {# TODO: decide if we want to display descriptions on the homepage #}
 {#                    {% if rfid_session.get('description') != '' %}#}
                         <span class="form_description" style="visibility: hidden"></span>
 {#                    {% endif %}#}
+                    <p align="center">Total scans: {% if rfid_session.get('total') %}{{ rfid_session.get('total') }}*{% else %}0{% endif %}</p>
+                    <small>* This includes duplicates</small>
                     <hr>
                     <div class="container">
                         <div class="row">
@@ -29,14 +45,13 @@
                                 <a href="{{ url_for('View:start_session', session_id=rfid_session.get('id')) }}" class="col-6 btn btn-success">Start Session</a>
                             {% elif rfid_session.get('status') == 'Open' %}
                                 {# Opened #}
-                                <a href="{{ url_for('View:scan_session', session_id=rfid_session.get('id')) }}" class="col-6 btn btn-success">Go to Session</a>
+                                <a href="{{ url_for('View:go_to_session', session_id=rfid_session.get('id')) }}" class="col-6 btn btn-success">Go to Session</a>
                                 <a href="{{ url_for('View:close_session', session_id=rfid_session.get('id')) }}" class="col-6 btn btn-primary">Close Session</a>
                             {% elif rfid_session.get('status') == 'Closed' %}
                                 {# Closed #}
                                 <a href="{{ url_for('View:start_session', session_id=rfid_session.get('id')) }}" class="col-6 btn btn-success">Reopen Session</a>
                             {% else %}
-                                {# TODO: add a better error message here #}
-                                <p class="col-6">ERROR: Please try reloading the page. If you still have issues, contact the Help Desk at <a href="mailto:helpdesk@bethel.edu">helpdesk@bethel.edu</a>. Thanks!</p>
+                                <p class="col-12">Please try reloading the page. If you still have issues, contact the Help Desk at <a href="mailto:helpdesk@bethel.edu">helpdesk@bethel.edu</a>. Thanks!</p>
                             {% endif %}
                             <a href="{{ url_for('View:download_csv', session_id=rfid_session.get('id')) }}" class="col-6 btn btn-primary">Download CSV</a>
                             <button class="col-6 delete-session btn btn-danger" data-toggle="modal" data-target="#deleteModal">Delete Session</button>

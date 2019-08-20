@@ -12,76 +12,128 @@ class Banner():
         return return_list
 
     def get_sessions_for_user(self, username):
-        # todo: add try/except
-        # todo: if user is admin, return all? or just create a separate one
-        results = self.engine.execute("""
-            SELECT * 
-            FROM BU_RFID_SCANNER_SESSIONS 
-            WHERE owner_username='{}' and deleted='N'
-        """.format(username))
-        return self._result_proxy_to_dicts(results)
+        try:
+            results = self.engine.execute("""
+                SELECT *
+                FROM BU_RFID_SCANNER_SESSIONS 
+                LEFT JOIN (
+                    SELECT BU_RFID_SCANNER_SCANS.session_id, COUNT(username) as total
+                    FROM BU_RFID_SCANNER_SCANS
+                    GROUP BY session_id
+                ) count_table 
+                ON BU_RFID_SCANNER_SESSIONS.id = count_table.session_id
+                WHERE BU_RFID_SCANNER_SESSIONS.owner_username='{}' AND BU_RFID_SCANNER_SESSIONS.deleted='N'
+                ORDER BY BU_RFID_SCANNER_SESSIONS.ID
+            """.format(username))
+            return self._result_proxy_to_dicts(results)
+        except:
+            return []
 
     def start_session(self, session_id):
-        results = self.engine.execute("""
-            UPDATE BU_RFID_SCANNER_SESSIONS
-            SET STATUS='Open'
-            WHERE id='{}' and (STATUS='Created' or STATUS='Closed')
-        """.format(session_id))
-        return True
+        try:
+            results = self.engine.execute("""
+                UPDATE BU_RFID_SCANNER_SESSIONS
+                SET status='Open'
+                WHERE id='{}' and (status='Created' or status='Closed')
+            """.format(session_id))
+            return True
+        except:
+            return False
 
     def close_session(self, session_id):
-        results = self.engine.execute("""
-            UPDATE BU_RFID_SCANNER_SESSIONS
-            SET STATUS='Closed'
-            WHERE id='{}' and STATUS='Open'
-        """.format(session_id))
-        return True
+        try:
+            results = self.engine.execute("""
+                UPDATE BU_RFID_SCANNER_SESSIONS
+                SET status='Closed'
+                WHERE id='{}' and status='Open'
+            """.format(session_id))
+            return True
+        except:
+            return False
 
     def delete_session(self, session_id):
-        results = self.engine.execute("""
-            UPDATE BU_RFID_SCANNER_SESSIONS
-            SET DELETED='Y'
-            WHERE id='{}'
-        """.format(session_id))
-        return True
+        try:
+            results = self.engine.execute("""
+                UPDATE BU_RFID_SCANNER_SESSIONS
+                SET deleted='Y'
+                WHERE id='{}'
+            """.format(session_id))
+            return True
+        except:
+            return False
 
     def create_new_session(self, username, form_name, form_description):
-        results = self.engine.execute("""
-            INSERT INTO BU_RFID_SCANNER_SESSIONS (FORM_NAME, OWNER_USERNAME, DESCRIPTION)
-            VALUES('{}', '{}', '{}')
-        """.format(form_name, username, form_description))
-        return True
+        try:
+            results = self.engine.execute("""
+                INSERT INTO BU_RFID_SCANNER_SESSIONS (FORM_NAME, OWNER_USERNAME, DESCRIPTION)
+                VALUES('{}', '{}', '{}')
+            """.format(form_name, username, form_description))
+            return True
+        except:
+            return False
 
     def edit_session(self, session_id, form_name, form_description):
-        results = self.engine.execute("""
-            UPDATE BU_RFID_SCANNER_SESSIONS
-            SET FORM_NAME='{}',DESCRIPTION='{}'
-            WHERE id='{}'
-        """.format(form_name, form_description, session_id))
-        return True
+        try:
+            results = self.engine.execute("""
+                UPDATE BU_RFID_SCANNER_SESSIONS
+                SET form_name='{}',description='{}'
+                WHERE id='{}'
+            """.format(form_name, form_description, session_id))
+            return True
+        except:
+            return False
 
     def scan_user(self, session_id, card_id, username, first_name, last_name):
-        results = self.engine.execute("""
-            INSERT INTO BU_RFID_SCANNER_SCANS (SESSION_ID, CARD_ID, USERNAME, FIRST_NAME, LAST_NAME, SCAN_DATETIME)
-            VALUES({}, {}, '{}', '{}', '{}', CURRENT_TIMESTAMP)
-        """.format(session_id, card_id, username, first_name, last_name))
-        return True
+        try:
+            results = self.engine.execute("""
+                INSERT INTO BU_RFID_SCANNER_SCANS (session_id, card_id, username, first_name, last_name, scan_datetime)
+                VALUES({}, {}, '{}', '{}', '{}', CURRENT_TIMESTAMP)
+            """.format(session_id, card_id, username, first_name, last_name))
+            return True
+        except:
+            return False
 
     def get_session(self, session_id):
-        results = self.engine.execute("""
-            SELECT * 
-            FROM BU_RFID_SCANNER_SESSIONS 
-            WHERE ID={} AND DELETED='N'
-        """.format(session_id))
-        return self._result_proxy_to_dicts(results)[0]
+        try:
+            results = self.engine.execute("""
+                SELECT * 
+                FROM BU_RFID_SCANNER_SESSIONS 
+                WHERE id={} AND deleted='N'
+            """.format(session_id))
+            return self._result_proxy_to_dicts(results)[0]
+        except IndexError:
+            return {}
 
     def get_session_data_for_csv(self, session_id):
-        results = self.engine.execute("""
-            SELECT SCAN_DATETIME, FIRST_NAME, LAST_NAME, USERNAME, CARD_ID
-            FROM BU_RFID_SCANNER_SCANS
-            WHERE SESSION_ID={}
-            ORDER BY SCAN_DATETIME
-        """.format(session_id))
-        return self._result_proxy_to_dicts(results)
+        try:
+            results = self.engine.execute("""
+                SELECT scan_datetime, first_name, last_name, username, card_id
+                FROM BU_RFID_SCANNER_SCANS
+                WHERE session_id={}
+                ORDER BY scan_datetime
+            """.format(session_id))
+            return self._result_proxy_to_dicts(results)
+        except:
+            return {}
 
-    
+    def get_number_of_scans_for_session(self, session_id):
+        try:
+            results = self.engine.execute("""
+                SELECT COUNT(*) 
+                FROM BU_RFID_SCANNER_SCANS
+                WHERE session_id={}
+            """.format(session_id))
+            return self._result_proxy_to_dicts(results)[0]
+        except IndexError:
+            return {}
+
+    def can_user_access_session(self, username, session_id):
+        try:
+            results = self.engine.execute("""
+                SELECT *
+                FROM BU_RFID_SCANNER_SESSIONS
+                WHERE id={} AND owner_username='{}'
+            """.format(session_id, username))
+            return len(self._result_proxy_to_dicts(results)[0])
+        except IndexError:
+            return {}

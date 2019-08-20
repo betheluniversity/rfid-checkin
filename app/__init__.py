@@ -1,5 +1,6 @@
 from datetime import datetime
-from flask import Flask, render_template, make_response, redirect, session
+
+from flask import Flask, render_template, make_response, redirect, session, abort
 
 app = Flask(__name__)
 app.config.from_object('config')
@@ -12,6 +13,7 @@ if app.config['SENTRY_URL']:
     sentry = Sentry(app, dsn=app.config['SENTRY_URL'])
 
 from app.views import View
+from app.controllers import RFIDController
 
 View.register(app, route_base='/')
 
@@ -27,13 +29,13 @@ def logout():
     resp.set_cookie('MOD_AUTH_CAS', '', expires=0, path='/')
     return resp
 
-# TODO: logout
 
 # This makes these variables open to use everywhere
 @app.context_processor
 def utility_processor():
     to_return = {}
     to_return.update({
+        'alert': RFIDController().get_alert(),
         'now': datetime.now()
     })
 

@@ -1,9 +1,15 @@
 {% extends 'base.html' %}
 
 {% block body_content %}
-    <h2>{{ rfid_session.get('form_name') }}</h2>
-    <p>Welcome! Scan your id to sign in.</p>
-    <p>{{ rfid_session.get('description') }}</p>
+    <div align="center">
+        <h1 class="header">{{ rfid_session.get('form_name') }}</h1>
+        <p>Welcome! Scan your id to sign in.</p>
+        {% if rfid_session.get('description', '') != '' %}
+            <p>{{ rfid_session.get('description') }}</p>
+        {% endif %}
+        <div class="alert-container"></div>
+    </div>
+
 {% endblock %}
 
 {% block additional_js %}
@@ -18,7 +24,12 @@
                         'session_id': "{{ session_id }}"
                     };
                     $.post(url, scannedInput, function(data){
-                        alert(data);
+                        $('.alert-container').append(data);
+                        {#$('.alert').alert('close');#}
+                        $(".alert-dismissible").fadeTo(5000, 500).slideUp(500, function(){
+                            $(this).alert('close');
+                        });
+
                         input = "";
                     });
                     input = "";
