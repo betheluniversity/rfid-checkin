@@ -4,6 +4,7 @@ from flask import Flask, render_template, make_response, redirect, session, abor
 
 app = Flask(__name__)
 app.config.from_object('config')
+app.url_map.strict_slashes = False
 
 if app.config['SENTRY_URL']:
     from raven import Client

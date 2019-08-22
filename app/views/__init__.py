@@ -3,10 +3,10 @@ from datetime import datetime
 from io import StringIO
 import re
 
-from flask import render_template, request, session, redirect, url_for, Response, stream_with_context, abort, make_response
+from flask import render_template, request, redirect, url_for, Response, stream_with_context, abort, make_response
 from flask_classy import FlaskView, route
 
-from app import app
+from app import app, session
 from app.controllers import RFIDController
 from app.db_repository.db_functions import Banner
 from app.wsapi import WSAPIController
@@ -116,11 +116,15 @@ class View(FlaskView):
 
     @route('/go-to-session/<session_id>', methods=['GET'])
     def go_to_session(self, session_id):
-        # todo: ADD LOGOUT
-        resp = make_response(redirect(app.config['LOGOUT_URL'] + '?service=' + request.host_url[:-1] + url_for('View:scan_session', session_id=session_id)))
-        resp.set_cookie('MOD_AUTH_CAS_S', '', expires=0, path='/')
-        resp.set_cookie('MOD_AUTH_CAS', '', expires=0, path='/')
-        return resp
+        if app.config.get('ENVIRON') == 'prod':
+            session.clear()
+            resp = make_response(redirect(app.config['LOGOUT_URL'] + '?service=' + request.host_url[:-1] + url_for('View:scan_session', session_id=session_id)))
+            resp.set_cookie('MOD_AUTH_CAS_S', '', expires=0, path='/')
+            resp.set_cookie('MOD_AUTH_CAS', '', expires=0, path='/')
+
+            return resp
+        else:
+            return redirect(url_for('View:scan_session', session_id=session_id))
 
     @route('/scan-session/<session_id>', methods=['GET'])
     def scan_session(self, session_id):
@@ -148,7 +152,6 @@ class View(FlaskView):
             self.controller.set_alert('danger', 'ERROR: Failed sign in the user with Card ID, {}.'.format(card_id))
             return 'failed'
 
-
     @route('/download-csv/<session_id>', methods=['get'])
     def download_csv(self, session_id):
 
@@ -156,10 +159,10 @@ class View(FlaskView):
         if not self.banner.can_user_access_session(session.get('username'), session_id):
             return abort(403)
 
-        session = self.banner.get_session(session_id)
+        scan_session = self.banner.get_session(session_id)
         session_data = self.banner.get_session_data_for_csv(session_id)
 
-        session_name = '{} {}'.format(session.get('form_name'), datetime.now().strftime('%m/%d/%Y'))
+        session_name = '{} {}'.format(scan_session.get('form_name'), datetime.now().strftime('%m/%d/%Y'))
         return self._export_csv(session_data, session_name)
 
     def _export_csv(self, data, csv_name):
