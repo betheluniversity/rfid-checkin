@@ -3,10 +3,10 @@ from datetime import datetime
 from io import StringIO
 import re
 
-from flask import render_template, request, redirect, url_for, Response, stream_with_context, abort, make_response
+from flask import session, render_template, request, redirect, url_for, Response, stream_with_context, abort, make_response
 from flask_classy import FlaskView, route
 
-from app import app, session
+from app import app
 from app.controllers import RFIDController
 from app.db_repository.db_functions import Banner
 from app.wsapi import WSAPIController
@@ -21,10 +21,6 @@ class View(FlaskView):
 
     def before_request(self, name, **kwargs):
         if '/static/' not in request.url and '/main_js' not in request.url and '/favicon.ico' not in request.url:
-
-            if app.config['ENVIRON'] != 'prod':
-                session.clear()
-
             if 'username' not in session.keys():
                 if app.config['ENVIRON'] == 'prod':
                     session['username'] = request.environ.get('REMOTE_USER')
@@ -63,10 +59,12 @@ class View(FlaskView):
             else:
                 # successful new message
                 self.controller.set_alert('success', 'Successfully created the session, {}.'.format(form_name))
-            return redirect(url_for('View:index'))
         else:
             self.controller.set_alert('danger', 'ERROR: Failed to create the session, {}.'.format(form_name))
-            return redirect(url_for('View:index'))
+
+        # rfid_sessions = self.banner.get_sessions_for_user(session.get('username'))
+        # return render_template('index.html', **locals())
+        return redirect(url_for('View:index'))
 
     @route('/delete-session', methods=['POST'])
     def delete_session(self):
@@ -84,6 +82,8 @@ class View(FlaskView):
             self.controller.set_alert('warning', 'Succesfully deleted the session')
         else:
             self.controller.set_alert('danger', 'ERROR: Failed to delete the session.')
+        rfid_sessions = self.banner.get_sessions_for_user(session.get('username'))
+        return render_template('index.html', **locals())
         return redirect(url_for('View:index'))
 
     @route('/archive-session/<session_id>', methods=['GET'])

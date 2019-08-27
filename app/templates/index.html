@@ -9,7 +9,6 @@
 
     {# SHOWS ALERTS #}
     {% if alert %}
-        THERE ARE ALERTS
         {% for a in alert %}
             <div class="margins">
                 <div class="alert alert-{{ a.type }} alert-dismissible fade show" role="alert">

@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from flask import Flask, render_template, make_response, redirect, session, abort
+from flask import Flask, render_template, make_response, redirect, session
 
 app = Flask(__name__)
 app.config.from_object('config')
