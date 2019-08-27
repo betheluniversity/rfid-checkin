@@ -20,25 +20,28 @@ class View(FlaskView):
         self.controller = RFIDController()
 
     def before_request(self, name, **kwargs):
-        if app.config['ENVIRON'] != 'prod':
-            session.clear()
+        if '/static/' not in request.url and '/main_js' not in request.url and '/favicon.ico' not in request.url:
 
-        if 'username' not in session.keys():
-            if app.config['ENVIRON'] == 'prod':
-                session['username'] = request.environ.get('REMOTE_USER')
-            else:
-                session['username'] = app.config['TEST_USER']
+            if app.config['ENVIRON'] != 'prod':
+                session.clear()
 
-        if 'name' not in session.keys():
-            session['name'] = self.wsapi.get_names_from_username(session.get('username'))
+            if 'username' not in session.keys():
+                if app.config['ENVIRON'] == 'prod':
+                    session['username'] = request.environ.get('REMOTE_USER')
+                else:
+                    session['username'] = app.config['TEST_USER']
 
-        if 'alert' not in session.keys():
-            session['alert'] = []
+            if 'name' not in session.keys():
+                session['name'] = self.wsapi.get_names_from_username(session.get('username'))
+
+            if 'alert' not in session.keys():
+                session['alert'] = []
 
     def index(self):
         rfid_sessions = self.banner.get_sessions_for_user(session.get('username'))
         return render_template('index.html', **locals())
 
+    # this also accepts edits
     @route('/create-new-session/', methods=['POST'])
     def create_new_session(self):
         rform = request.form
@@ -63,7 +66,7 @@ class View(FlaskView):
             return redirect(url_for('View:index'))
         else:
             self.controller.set_alert('danger', 'ERROR: Failed to create the session, {}.'.format(form_name))
-            return 'failed'
+            return redirect(url_for('View:index'))
 
     @route('/delete-session', methods=['POST'])
     def delete_session(self):
@@ -79,13 +82,12 @@ class View(FlaskView):
 
         if status:
             self.controller.set_alert('warning', 'Succesfully deleted the session')
-            return redirect(url_for('View:index'))
         else:
             self.controller.set_alert('danger', 'ERROR: Failed to delete the session.')
-            return 'failed'
+        return redirect(url_for('View:index'))
 
-    @route('/close-session/<session_id>', methods=['GET'])
-    def close_session(self, session_id):
+    @route('/archive-session/<session_id>', methods=['GET'])
+    def archive_session(self, session_id):
 
         # permissions check
         if not self.banner.can_user_access_session(session.get('username'), session_id):
@@ -121,7 +123,6 @@ class View(FlaskView):
             resp = make_response(redirect(app.config['LOGOUT_URL'] + '?service=' + request.host_url[:-1] + url_for('View:scan_session', session_id=session_id)))
             resp.set_cookie('MOD_AUTH_CAS_S', '', expires=0, path='/')
             resp.set_cookie('MOD_AUTH_CAS', '', expires=0, path='/')
-
             return resp
         else:
             return redirect(url_for('View:scan_session', session_id=session_id))
@@ -138,19 +139,27 @@ class View(FlaskView):
         form = request.form
         scan = form.get("scan")
         session_id = form.get("session_id")
-        card_id = re.search("\[\[(.+?)\]\]", scan).group(1)
+        card_data = re.search("\[\[(.+?)\]\]", scan)
 
-        if card_id:
-            username = self.wsapi.get_user_from_prox(card_id).get('username')
-            user_data = self.wsapi.get_names_from_username(username)
-            first_name = user_data.get('first_name')
-            last_name = user_data.get('last_name')
+        alert_type = 'danger'
+        if card_data:
+            try:
+                card_id = card_data.group(1)
+                username = self.wsapi.get_user_from_prox(card_id).get('username')
+                user_data = self.wsapi.get_names_from_username(username)
+                first_name = user_data.get('first_name')
+                last_name = user_data.get('last_name')
 
-            self.banner.scan_user(session_id, card_id, username, first_name, last_name)
-            return render_template('scan_alert.html', **locals())
+                self.banner.scan_user(session_id, card_id, username, first_name, last_name)
+                alert_type = 'success'
+                alert_message = 'Thank you for signing in, {} {}.'.format(first_name, last_name)
+            except:
+                alert_message = 'ERROR: Failed sign in the user with Card ID, {}'.format(card_id)
         else:
-            self.controller.set_alert('danger', 'ERROR: Failed sign in the user with Card ID, {}.'.format(card_id))
-            return 'failed'
+            alert_message = 'ERROR: Failed to get the card ID. Please try again.'
+
+        return render_template('scan_alert.html', **locals())
+
 
     @route('/download-csv/<session_id>', methods=['get'])
     def download_csv(self, session_id):

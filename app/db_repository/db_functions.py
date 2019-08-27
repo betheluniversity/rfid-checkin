@@ -23,7 +23,7 @@ class Banner():
                 ) count_table 
                 ON BU_RFID_SCANNER_SESSIONS.id = count_table.session_id
                 WHERE BU_RFID_SCANNER_SESSIONS.owner_username='{}' AND BU_RFID_SCANNER_SESSIONS.deleted='N'
-                ORDER BY BU_RFID_SCANNER_SESSIONS.ID
+                ORDER BY BU_RFID_SCANNER_SESSIONS.ID DESC
             """.format(username))
             return self._result_proxy_to_dicts(results)
         except:
@@ -34,7 +34,7 @@ class Banner():
             results = self.engine.execute("""
                 UPDATE BU_RFID_SCANNER_SESSIONS
                 SET status='Open'
-                WHERE id='{}' and (status='Created' or status='Closed')
+                WHERE id='{}' and (status='Open' or status='Closed')
             """.format(session_id))
             return True
         except:

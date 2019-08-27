@@ -9,7 +9,7 @@ $(document).ready(function(){
 
     $('.edit-session').click(function(){
         // set ID
-        var session_id = $(this).closest('.session').data('session-id');
+        var session_id = $(this).data('session-id');
         $('#session_id_field').val(session_id);
 
         // set Name
@@ -23,7 +23,7 @@ $(document).ready(function(){
 
     $('.delete-session').click(function(){
         // set ID
-        var session_id = $(this).closest('.session').data('session-id');
+        var session_id = $(this).data('session-id');
         $('#delete_session_id_field').val(session_id);
     });
 
@@ -36,4 +36,7 @@ $(document).ready(function(){
     //         location.href = "{{ url_for('View:index') }}";
     //     });
     // });
+
+    // initiate tooltips
+    $('[data-toggle="tooltip"]').tooltip();
 });

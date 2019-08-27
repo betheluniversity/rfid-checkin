@@ -1,4 +1,4 @@
-from flask import session
+from app import session
 
 
 class RFIDController(object):

@@ -4,7 +4,7 @@
     <div align="center">
         <h1 class="header">{{ rfid_session.get('form_name') }}</h1>
         <p>Welcome! Scan your id to sign in.</p>
-        {% if rfid_session.get('description', '') != '' %}
+        {% if rfid_session.get('description', '') != None and rfid_session.get('description', '') != '' %}
             <p>{{ rfid_session.get('description') }}</p>
         {% endif %}
         <div class="alert-container"></div>
@@ -25,7 +25,6 @@
                     };
                     $.post(url, scannedInput, function(data){
                         $('.alert-container').append(data);
-                        {#$('.alert').alert('close');#}
                         $(".alert-dismissible").fadeTo(5000, 500).slideUp(500, function(){
                             $(this).alert('close');
                         });
