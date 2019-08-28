@@ -39,7 +39,7 @@
 
                 <h4 class="form_name pt-4 mt-1" align="center">{{ rfid_session.get('form_name') }}</h4>
                 <p align="center" data-toggle="tooltip" data-placement="bottom" title="This number may include duplicates.">
-                    {% if rfid_session.get('status') != 'Closed' %}
+                    {% if rfid_session.get('status') != 'Archived' %}
                         <span class="badge badge-warning">open</span>
                     {% else %}
                         <span class="badge badge-secondary">archived</span>
@@ -54,8 +54,8 @@
                             <a href="{{ url_for('View:go_to_session', session_id=rfid_session.get('id')) }}" class="col-12 mb-2 btn btn-success">Go to Session</a>
                             <a href="{{ url_for('View:download_csv', session_id=rfid_session.get('id')) }}" class="col-12 mb-2 btn btn-primary">Download CSV</a>
                             <a href="{{ url_for('View:archive_session', session_id=rfid_session.get('id')) }}" class="col-12 btn btn-secondary">Archive Session</a>
-                        {% elif rfid_session.get('status') == 'Closed' %}
-                            {# Closed #}
+                        {% elif rfid_session.get('status') == 'Archived' %}
+                            {# Archived #}
                             <a href="{{ url_for('View:start_session', session_id=rfid_session.get('id')) }}" class="col-12 mb-2 btn btn-success">Reopen Session</a>
                             <a href="{{ url_for('View:download_csv', session_id=rfid_session.get('id')) }}" class="col-12 btn btn-primary">Download CSV</a>
                         {% else %}
@@ -67,26 +67,37 @@
         </div>
     {% endmacro %}
 
-    <h2 class="pt-5">Open Sessions</h2>
-    <div class="container">
-      <div class="row">
-        {% for rfid_session in rfid_sessions %}
-            {% if rfid_session.get('status') == 'Open' %}
-                {{ create_session_card(rfid_session) }}
-            {% endif %}
-        {% endfor %}
-      </div>
-    </div>
-    <h2 class="pt-5">Archived Sessions</h2>
-    <div class="container">
-      <div class="row">
-        {% for rfid_session in rfid_sessions %}
-            {% if rfid_session.get('status') == 'Closed' %}
-                {{ create_session_card(rfid_session) }}
-            {% endif %}
-        {% endfor %}
-      </div>
-    </div>
+    {% if open_rfid_sessions|length > 0 or archived_rfid_sessions|length > 0 %}
+        {% if open_rfid_sessions|length > 0 %}
+            <h2 class="pt-5">Open Sessions</h2>
+            <div class="container">
+              <div class="row">
+                {% for rfid_session in rfid_sessions %}
+                    {% if rfid_session.get('status') == 'Open' %}
+                        {{ create_session_card(rfid_session) }}
+                    {% endif %}
+                {% endfor %}
+              </div>
+            </div>
+        {% endif %}
+        {% if archived_rfid_sessions|length > 0 %}
+            <h2 class="pt-5">Archived Sessions</h2>
+            <div class="container">
+              <div class="row">
+                {% for rfid_session in rfid_sessions %}
+                    {% if rfid_session.get('status') == 'Archived' %}
+                        {{ create_session_card(rfid_session) }}
+                    {% endif %}
+                {% endfor %}
+              </div>
+            </div>
+        {% endif %}
+    {% else %}
+        <div class="pt-4">
+            <p>No sessions created for you, yet. Click "+ Create Session" above to create your first session.</p>
+        </div>
+    {% endif %}
+
 
     <!-- Create/Edit Session Modal -->
     <div class="modal fade" id="sessionModal" tabindex="-1" role="dialog" aria-labelledby="sessionModalLabel" aria-hidden="true">

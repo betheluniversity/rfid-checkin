@@ -18,9 +18,11 @@ from app.controllers import RFIDController
 
 View.register(app, route_base='/')
 
+
 @app.route("/main_js")
 def main_js():
     return render_template("/js/main.js")
+
 
 @app.route("/logout", methods=["GET"])
 def logout():
@@ -29,6 +31,11 @@ def logout():
     resp.set_cookie('MOD_AUTH_CAS_S', '', expires=0, path='/')
     resp.set_cookie('MOD_AUTH_CAS', '', expires=0, path='/')
     return resp
+
+
+@app.route('/favicon.ico')
+def favicon():
+    return redirect('/static/favicons/favicon.ico')
 
 
 # This makes these variables open to use everywhere

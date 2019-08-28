@@ -34,7 +34,7 @@ class Banner():
             results = self.engine.execute("""
                 UPDATE BU_RFID_SCANNER_SESSIONS
                 SET status='Open'
-                WHERE id='{}' and (status='Open' or status='Closed')
+                WHERE id='{}' and (status='Open' or status='Archived')
             """.format(session_id))
             return True
         except:
@@ -44,7 +44,7 @@ class Banner():
         try:
             results = self.engine.execute("""
                 UPDATE BU_RFID_SCANNER_SESSIONS
-                SET status='Closed'
+                SET status='Archived'
                 WHERE id='{}' and status='Open'
             """.format(session_id))
             return True

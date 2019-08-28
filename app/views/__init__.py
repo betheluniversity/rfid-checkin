@@ -20,7 +20,7 @@ class View(FlaskView):
         self.controller = RFIDController()
 
     def before_request(self, name, **kwargs):
-        if '/static/' not in request.url and '/main_js' not in request.url and '/favicon.ico' not in request.url:
+        if '/static/' not in request.url and '/main_js' not in request.url and '/favicon.favicons' not in request.url:
             if 'username' not in session.keys():
                 if app.config['ENVIRON'] == 'prod':
                     session['username'] = request.environ.get('REMOTE_USER')
@@ -35,6 +35,15 @@ class View(FlaskView):
 
     def index(self):
         rfid_sessions = self.banner.get_sessions_for_user(session.get('username'))
+
+        open_rfid_sessions = []
+        archived_rfid_sessions = []
+        for rfid_session in rfid_sessions:
+            if rfid_session.get('status') == 'Open':
+                open_rfid_sessions.append(rfid_session)
+            elif rfid_session.get('status') == 'Archived':
+                archived_rfid_sessions.append(rfid_session)
+
         return render_template('index.html', **locals())
 
     # this also accepts edits
@@ -82,8 +91,6 @@ class View(FlaskView):
             self.controller.set_alert('warning', 'Succesfully deleted the session')
         else:
             self.controller.set_alert('danger', 'ERROR: Failed to delete the session.')
-        rfid_sessions = self.banner.get_sessions_for_user(session.get('username'))
-        return render_template('index.html', **locals())
         return redirect(url_for('View:index'))
 
     @route('/archive-session/<session_id>', methods=['GET'])
@@ -93,12 +100,12 @@ class View(FlaskView):
         if not self.banner.can_user_access_session(session.get('username'), session_id):
             return abort(403)
 
-        closed_session = self.banner.close_session(session_id)
-        if closed_session:
-            self.controller.set_alert('success', 'Succesfully closed the session')
+        archived_session = self.banner.close_session(session_id)
+        if archived_session:
+            self.controller.set_alert('success', 'Succesfully archived the session')
             return redirect(url_for('View:index'))
         else:
-            self.controller.set_alert('danger', 'ERROR: Failed to close the session')
+            self.controller.set_alert('danger', 'ERROR: Failed to archived the session')
             return 'failed'
 
     # this also does the reopen session
