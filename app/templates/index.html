@@ -25,7 +25,7 @@
         <div class="col-12 col-md-6 col-lg-4 p-2 mt-4">
             <div class='card session p-3 mb-3'>
                 <span class="edit-session p-1" aria-hidden="true"
-                        data-toggle="modal" data-target="#sessionModal" data-session-id="{{ rfid_session.get('id') }}" data-description="{{ rfid_session.get('description') }}" data-name="{{ rfid_session.get('form_name') }}" aria-label="Edit">
+                        data-toggle="modal" data-target="#sessionModal" data-session-id="{{ rfid_session.get('id') }}" data-description="{% if rfid_session.get('description') != None %}{{ rfid_session.get('description') }}{% endif %}" data-name="{{ rfid_session.get('form_name') }}" aria-label="Edit">
                     <i class="fa fa-pencil-alt"></i>
                 </span>
 
@@ -114,7 +114,7 @@
                   <input id='session_id_field' type="hidden" name="session_id" />
                   <label for="form_name">Name
                       <br>
-                      <textarea id='form_name_field' name="form_name" rows="2" cols="50" maxlength="150"></textarea>
+                      <textarea id='form_name_field' name="form_name" rows="2" cols="50" maxlength="150" required></textarea>
                   <br>
                   <label for="form_description">Description
                       <br>
