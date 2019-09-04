@@ -30,6 +30,10 @@ body {
 	background: #fff;
 }
 
+.navbar-brand {
+	color: white !important;
+}
+
 #navbarDropdown {
 	color: white;
 }

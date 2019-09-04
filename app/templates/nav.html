@@ -1,13 +1,35 @@
 <nav class="navbar navbar-expand-lg navbar-dark bkg--navy">
-{#    {% if '/no-cas/' in request.url %}#}
-{#        {% set href = "" %}#}
-{#    {% else %}#}
-        {% set href = "{{ url_for('View:index') }}" %}
-{#    {% endif %}#}
-    <a class="navbar-brand" href="{{ href }}">
-        <img height="48" src="https://confluence.bethel.edu/download/attachments/327682/global.logo?version=4&amp;modificationDate=1462424762000&amp;api=v2">
-        <span class="ml-2  h6">BU RFID Scanner</span>
-    </a>
+    {% if '/no-cas/' in request.url %}
+        <div class="modal fade" id="homepageModal" tabindex="-1" role="dialog" aria-labelledby="homepageModalLabel" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="homepageModalLabel">Delete Session</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                  <p>Are you sure you want to leave this page and go to your other sessions?</p>
+              </div>
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                  <a href="{{ url_for('View:index') }}" class="btn btn-primary">Leave this page</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <a class="navbar-brand" data-toggle="modal" data-target="#homepageModal">
+            <img height="48" src="https://confluence.bethel.edu/download/attachments/327682/global.logo?version=4&amp;modificationDate=1462424762000&amp;api=v2">
+            <span class="ml-2  h6">BU RFID Scanner</span>
+        </a>
+    {% else %}
+        <a class="navbar-brand" href="{{ url_for('View:index') }}">
+            <img height="48" src="https://confluence.bethel.edu/download/attachments/327682/global.logo?version=4&amp;modificationDate=1462424762000&amp;api=v2">
+            <span class="ml-2  h6">BU RFID Scanner</span>
+        </a>
+    {% endif %}
 
         {% if 'scan-session' not in request.url %}
             <div class="nav-item dropdown navbar-right">
