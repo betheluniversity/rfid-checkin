@@ -20,7 +20,7 @@ class View(FlaskView):
         self.controller = RFIDController()
 
     def before_request(self, name, **kwargs):
-        if '/static/' not in request.url and '/main_js' not in request.url and '/favicon.favicons' not in request.url and '/no-cas/' not in request.url:
+        if '/static/' not in request.url and '/main_js' not in request.url and '/favicon.ico' not in request.url and '/no-cas/' not in request.url:
             if 'username' not in session.keys():
                 if app.config['ENVIRON'] == 'prod':
                     session['username'] = request.environ.get('REMOTE_USER')
