@@ -22,9 +22,9 @@ class Banner():
                     GROUP BY session_id
                 ) count_table 
                 ON BU_RFID_SCANNER_SESSIONS.id = count_table.session_id
-                WHERE BU_RFID_SCANNER_SESSIONS.owner_username='{}' AND BU_RFID_SCANNER_SESSIONS.deleted='N'
+                WHERE BU_RFID_SCANNER_SESSIONS.owner_username=:username AND BU_RFID_SCANNER_SESSIONS.deleted='N'
                 ORDER BY BU_RFID_SCANNER_SESSIONS.ID DESC
-            """.format(username))
+            """, username=username)
             return self._result_proxy_to_dicts(results)
         except:
             return []
@@ -34,8 +34,8 @@ class Banner():
             results = self.engine.execute("""
                 UPDATE BU_RFID_SCANNER_SESSIONS
                 SET status='Open'
-                WHERE id='{}' and (status='Open' or status='Archived')
-            """.format(session_id))
+                WHERE id=:session_id and (status='Open' or status='Archived')
+            """, session_id=session_id)
             return True
         except:
             return False
@@ -45,8 +45,8 @@ class Banner():
             results = self.engine.execute("""
                 UPDATE BU_RFID_SCANNER_SESSIONS
                 SET status='Archived'
-                WHERE id='{}' and status='Open'
-            """.format(session_id))
+                WHERE id=:session_id and status='Open'
+            """, session_id=session_id)
             return True
         except:
             return False
@@ -56,8 +56,8 @@ class Banner():
             results = self.engine.execute("""
                 UPDATE BU_RFID_SCANNER_SESSIONS
                 SET deleted='Y'
-                WHERE id='{}'
-            """.format(session_id))
+                WHERE id=:session_id
+            """, session_id=session_id)
             return True
         except:
             return False
@@ -66,8 +66,8 @@ class Banner():
         try:
             results = self.engine.execute("""
                 INSERT INTO BU_RFID_SCANNER_SESSIONS (FORM_NAME, OWNER_USERNAME, DESCRIPTION)
-                VALUES('{}', '{}', '{}')
-            """.format(form_name, username, form_description))
+                VALUES(:form_name, :username, :form_description)
+            """, form_name=form_name, username=username, form_description=form_description)
             return True
         except:
             return False
@@ -76,9 +76,9 @@ class Banner():
         try:
             results = self.engine.execute("""
                 UPDATE BU_RFID_SCANNER_SESSIONS
-                SET form_name='{}',description='{}'
-                WHERE id='{}'
-            """.format(form_name, form_description, session_id))
+                SET form_name=:form_name,description=:form_description
+                WHERE id=:session_id
+            """, form_name=form_name, form_description=form_description, session_id=session_id)
             return True
         except:
             return False
@@ -87,8 +87,8 @@ class Banner():
         try:
             results = self.engine.execute("""
                 INSERT INTO BU_RFID_SCANNER_SCANS (session_id, card_id, username, first_name, last_name, scan_datetime)
-                VALUES({}, {}, '{}', '{}', '{}', CURRENT_TIMESTAMP)
-            """.format(session_id, card_id, username, first_name, last_name))
+                VALUES(:session_id, :card_id, :username, :first_name, :last_name, CURRENT_TIMESTAMP)
+            """, session_id=session_id, card_id=card_id, username=username, first_name=first_name, last_name=last_name)
             return True
         except:
             return False
@@ -98,8 +98,8 @@ class Banner():
             results = self.engine.execute("""
                 SELECT * 
                 FROM BU_RFID_SCANNER_SESSIONS 
-                WHERE id={} AND deleted='N'
-            """.format(session_id))
+                WHERE id=:session_id AND deleted='N'
+            """, session_id=session_id)
             return self._result_proxy_to_dicts(results)[0]
         except IndexError:
             return {}
@@ -109,9 +109,9 @@ class Banner():
             results = self.engine.execute("""
                 SELECT scan_datetime, first_name, last_name, username, card_id
                 FROM BU_RFID_SCANNER_SCANS
-                WHERE session_id={}
+                WHERE session_id=:session_id
                 ORDER BY scan_datetime
-            """.format(session_id))
+            """, session_id=session_id)
             return self._result_proxy_to_dicts(results)
         except:
             return {}
@@ -121,8 +121,8 @@ class Banner():
             results = self.engine.execute("""
                 SELECT COUNT(*) 
                 FROM BU_RFID_SCANNER_SCANS
-                WHERE session_id={}
-            """.format(session_id))
+                WHERE session_id=:session_id
+            """, session_id=session_id)
             return self._result_proxy_to_dicts(results)[0]
         except IndexError:
             return {}
@@ -132,8 +132,8 @@ class Banner():
             results = self.engine.execute("""
                 SELECT *
                 FROM BU_RFID_SCANNER_SESSIONS
-                WHERE id={} AND owner_username='{}'
-            """.format(session_id, username))
+                WHERE id=:session_id AND owner_username=:username
+            """, session_id=session_id, username=username)
             return len(self._result_proxy_to_dicts(results)[0])
         except IndexError:
             return {}
