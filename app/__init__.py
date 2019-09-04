@@ -7,17 +7,13 @@ app.config.from_object('config')
 app.url_map.strict_slashes = False
 
 if app.config['SENTRY_URL']:
-    from raven import Client
-    client = Client(app.config['SENTRY_URL'])
-
-    from raven.contrib.flask import Sentry
-    sentry = Sentry(app, dsn=app.config['SENTRY_URL'])
+    import sentry_sdk
+    sentry_sdk.init(app.config['SENTRY_URL'])
 
 from app.views import View
 from app.controllers import RFIDController
 
 View.register(app, route_base='/')
-
 
 @app.route("/main_js")
 def main_js():
