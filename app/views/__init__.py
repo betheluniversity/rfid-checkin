@@ -20,7 +20,7 @@ class View(FlaskView):
         self.controller = RFIDController()
 
     def before_request(self, name, **kwargs):
-        if '/static/' not in request.url and '/main_js' not in request.url and '/favicon.favicons' not in request.url:
+        if '/static/' not in request.url and '/main_js' not in request.url and '/favicon.favicons' not in request.url and '/no-cas/' not in request.url:
             if 'username' not in session.keys():
                 if app.config['ENVIRON'] == 'prod':
                     session['username'] = request.environ.get('REMOTE_USER')
@@ -30,8 +30,8 @@ class View(FlaskView):
             if 'name' not in session.keys():
                 session['name'] = self.wsapi.get_names_from_username(session.get('username'))
 
-            if 'alert' not in session.keys():
-                session['alert'] = []
+        if 'alert' not in session.keys():
+            session['alert'] = []
 
     def index(self):
         rfid_sessions = self.banner.get_sessions_for_user(session.get('username'))
