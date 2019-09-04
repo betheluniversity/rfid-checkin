@@ -134,7 +134,7 @@ class View(FlaskView):
         else:
             return redirect(url_for('View:scan_session', session_id=session_id))
 
-    @route('/scan-session/<session_id>', methods=['GET'])
+    @route('/no-cas/scan-session/<session_id>', methods=['GET'])
     def scan_session(self, session_id):
         rfid_session = self.banner.get_session(session_id)
         if not rfid_session:
