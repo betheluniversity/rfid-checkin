@@ -188,9 +188,13 @@ class View(FlaskView):
 
             # get column names and format them
             data_to_write = []
-            for key in data[0].keys():
-                data_to_write.append(key.replace('_', ' ').title())
-            filewriter.writerow(data_to_write)
+            try:
+                for key in data[0].keys():
+                    data_to_write.append(key.replace('_', ' ').title())
+                filewriter.writerow(data_to_write)
+            except:
+                # don't write data if there isn't any to write, or there is an issue!
+                pass
 
             # write each row
             for row in data:
