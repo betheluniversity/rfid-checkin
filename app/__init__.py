@@ -8,7 +8,8 @@ app.url_map.strict_slashes = False
 
 if app.config['SENTRY_URL']:
     import sentry_sdk
-    sentry_sdk.init(app.config['SENTRY_URL'])
+    from sentry_sdk.integrations.flask import FlaskIntegration
+    sentry_sdk.init(dsn=app.config['SENTRY_URL'], integrations=[FlaskIntegration()])
 
 from app.views import View
 from app.controllers import RFIDController
