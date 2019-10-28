@@ -17,7 +17,7 @@ class Banner():
                 SELECT *
                 FROM BU_RFID_SCANNER_SESSIONS 
                 LEFT JOIN (
-                    SELECT BU_RFID_SCANNER_SCANS.session_id, COUNT(username) as total
+                    SELECT BU_RFID_SCANNER_SCANS.session_id, COUNT(card_id) as total
                     FROM BU_RFID_SCANNER_SCANS
                     GROUP BY session_id
                 ) count_table 
@@ -83,7 +83,7 @@ class Banner():
         except:
             return False
 
-    def scan_user(self, session_id, card_id, username, first_name, last_name):
+    def scan_user(self, session_id, card_id, username=None, first_name=None, last_name=None):
         try:
             results = self.engine.execute("""
                 INSERT INTO BU_RFID_SCANNER_SCANS (session_id, card_id, username, first_name, last_name, scan_datetime)
