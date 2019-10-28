@@ -162,9 +162,13 @@ class View(FlaskView):
                 alert_type = 'success'
                 alert_message = 'Thank you for signing in, {} {}.'.format(first_name, last_name)
             except:
-                self.banner.scan_user(session_id, card_id)
-                alert_type = 'warning'
-                alert_message = 'Thank you for signing in, {}. Your username could not be found in Banner. Please try again or contact the Help Desk at helpdesk@bethel.edu.'.format(card_id)
+                # if we are able to get the card_id but no data for them, still record their data.
+                if card_id:
+                    self.banner.scan_user(session_id, card_id)
+                    alert_type = 'warning'
+                    alert_message = 'Thank you for signing in, {}. Your username could not be found in Banner. Please try again or contact the Help Desk at helpdesk@bethel.edu.'.format(card_id)
+                else:
+                    alert_message = 'ERROR: Failed to get the card ID. Please try again.'
         else:
             alert_message = 'ERROR: Failed to get the card ID. Please try again.'
 
