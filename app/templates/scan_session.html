@@ -34,18 +34,16 @@
                         'scan': input,
                         'session_id': "{{ session_id }}"
                     };
-                    try {
-                        $.post(url, scannedInput, function (data) {
-                            $('.alert-container').append(data);
-                            $(".alert-dismissible").fadeTo(5000, 500).slideUp(500, function () {
-                                $(this).alert('close');
-                            });
-
-                            input = "";
+                    $.post(url, scannedInput, function (data) {
+                        $('.alert-container').append(data);
+                        $(".alert-dismissible").fadeTo(5000, 500).slideUp(500, function () {
+                            $(this).alert('close');
+                        }).fail(function(response){
+                            alert('failed!');
                         });
-                    } catch {
-                        alert('failed!');
-                    }
+
+                        input = "";
+                    });
                     input = "";
                 }else{
                     input = input + key.key;
