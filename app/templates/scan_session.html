@@ -6,12 +6,12 @@
 
         {# online indicator #}
         <div class="online-indicator" data-toggle="tooltip" data-placement="top" title="Connected to Internet">
-            <i class="fas fa-2x fa-wifi" style="display: inline-block;"></i>
+            <i class="fas fa-2x fa-wifi"></i>
         </div>
         {# offline indicator #}
         <div class="offline-indicator"  data-toggle="tooltip" data-placement="top" title="ERROR: Not connected to the Internet! You need to fix reconnect to the Internet to use this scan session.">
-            <i class="fas fa-2x fa-wifi" style="display: inline-block; position:absolute; color:gray;"></i>
-            <i class="fas fa-2x fa-slash" style="display: inline-block; color:gray;"></i>
+            <i class="fas fa-2x fa-wifi offline-indicator-wifi"></i>
+            <i class="fas fa-2x fa-slash offline-indicator-slash"></i>
         </div>
 
         <p>Welcome! Scan your id to sign in.</p>
@@ -34,14 +34,18 @@
                         'scan': input,
                         'session_id': "{{ session_id }}"
                     };
-                    $.post(url, scannedInput, function(data){
-                        $('.alert-container').append(data);
-                        $(".alert-dismissible").fadeTo(5000, 500).slideUp(500, function(){
-                            $(this).alert('close');
-                        });
+                    try {
+                        $.post(url, scannedInput, function (data) {
+                            $('.alert-container').append(data);
+                            $(".alert-dismissible").fadeTo(5000, 500).slideUp(500, function () {
+                                $(this).alert('close');
+                            });
 
-                        input = "";
-                    });
+                            input = "";
+                        });
+                    } catch {
+                        alert('failed!');
+                    }
                     input = "";
                 }else{
                     input = input + key.key;
@@ -57,7 +61,7 @@
                 $('.offline-indicator').hide();
                 $('.online-indicator').show();
             });
-            
+
             // show/hide initial offline/online indicators
             if( navigator.onLine ) {
                 $('.offline-indicator').hide();
