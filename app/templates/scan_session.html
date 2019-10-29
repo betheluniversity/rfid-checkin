@@ -3,6 +3,17 @@
 {% block body_content %}
     <div align="center">
         <h1 class="header">{{ rfid_session.get('form_name') }}</h1>
+
+        {# online indicator #}
+        <div class="online-indicator" data-toggle="tooltip" data-placement="top" title="Connected to Internet">
+            <i class="fas fa-2x fa-wifi" style="display: inline-block;"></i>
+        </div>
+        {# offline indicator #}
+        <div class="offline-indicator"  data-toggle="tooltip" data-placement="top" title="ERROR: Not connected to the Internet! You need to fix reconnect to the Internet to use this scan session.">
+            <i class="fas fa-2x fa-wifi" style="display: inline-block; position:absolute; color:gray;"></i>
+            <i class="fas fa-2x fa-slash" style="display: inline-block; color:gray;"></i>
+        </div>
+
         <p>Welcome! Scan your id to sign in.</p>
         {% if rfid_session.get('description', '') != None and rfid_session.get('description', '') != '' %}
             <p>{{ rfid_session.get('description') }}</p>
@@ -36,6 +47,29 @@
                     input = input + key.key;
                 }
             });
+
+            // add event listeners to offline/online indicators
+            window.addEventListener('offline', function(e) {
+                $('.offline-indicator').show();
+                $('.online-indicator').hide();
+            });
+            window.addEventListener('online', function(e) {
+                $('.offline-indicator').hide();
+                $('.online-indicator').show();
+            });
+            
+            // show/hide initial offline/online indicators
+            if( navigator.onLine ) {
+                $('.offline-indicator').hide();
+                $('.online-indicator').show();
+            } else {
+                $('.offline-indicator').show();
+                $('.online-indicator').hide();
+            }
+
+            // initialize tooltips
+            $('.offline-indicator').tooltip();
+            $('.online-indicator').tooltip();
         });
     </script>
 {% endblock %}
