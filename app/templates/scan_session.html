@@ -42,7 +42,22 @@
 
                         input = "";
                     }).fail(function(response){
-                        alert('failed!');
+                        if( response.statusCode === 0) {
+                            // we hit this code when there is no internet connection!
+                            // build the alert manually here, as we can't get it from python.
+                            data = `
+                                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                    <strong>ERROR: No Internet connection! Please fix your Internet connection and try again.</strong>
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                            `;
+                            $('.alert-container').append(data);
+                            $(".alert-dismissible").fadeTo(5000, 500).slideUp(500, function () {
+                                $(this).alert('close');
+                            });
+                        }
                     });
                     input = "";
                 }else{
