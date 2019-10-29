@@ -3,6 +3,17 @@
 {% block body_content %}
     <div align="center">
         <h1 class="header">{{ rfid_session.get('form_name') }}</h1>
+
+        {# online indicator #}
+        <div class="online-indicator" data-toggle="tooltip" data-placement="top" title="Connected to Internet">
+            <i class="fas fa-2x fa-wifi"></i>
+        </div>
+        {# offline indicator #}
+        <div class="offline-indicator"  data-toggle="tooltip" data-placement="top" title="ERROR: Not connected to the Internet! You need to fix reconnect to the Internet to use this scan session.">
+            <i class="fas fa-2x fa-wifi offline-indicator-wifi"></i>
+            <i class="fas fa-2x fa-slash offline-indicator-slash"></i>
+        </div>
+
         <p>Welcome! Scan your id to sign in.</p>
         {% if rfid_session.get('description', '') != None and rfid_session.get('description', '') != '' %}
             <p>{{ rfid_session.get('description') }}</p>
@@ -23,19 +34,57 @@
                         'scan': input,
                         'session_id': "{{ session_id }}"
                     };
-                    $.post(url, scannedInput, function(data){
+                    $.post(url, scannedInput, function (data) {
                         $('.alert-container').append(data);
-                        $(".alert-dismissible").fadeTo(5000, 500).slideUp(500, function(){
+                        $(".alert-dismissible").fadeTo(5000, 500).slideUp(500, function () {
                             $(this).alert('close');
                         });
 
                         input = "";
+                    }).fail(function(response){
+                        // we hit this code when there is no internet connection!
+                        // build the alert manually here, as we can't get it from python.
+                        data = `
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                <strong>ERROR: No Internet connection! Please fix your Internet connection and try again.</strong>
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                        `;
+                        $('.alert-container').append(data);
+                        $(".alert-dismissible").fadeTo(5000, 500).slideUp(500, function () {
+                            $(this).alert('close');
+                        });
                     });
                     input = "";
                 }else{
                     input = input + key.key;
                 }
             });
+
+            // add event listeners to offline/online indicators
+            window.addEventListener('offline', function(e) {
+                $('.offline-indicator').show();
+                $('.online-indicator').hide();
+            });
+            window.addEventListener('online', function(e) {
+                $('.offline-indicator').hide();
+                $('.online-indicator').show();
+            });
+
+            // show/hide initial offline/online indicators
+            if( navigator.onLine ) {
+                $('.offline-indicator').hide();
+                $('.online-indicator').show();
+            } else {
+                $('.offline-indicator').show();
+                $('.online-indicator').hide();
+            }
+
+            // initialize tooltips
+            $('.offline-indicator').tooltip();
+            $('.online-indicator').tooltip();
         });
     </script>
 {% endblock %}

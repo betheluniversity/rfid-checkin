@@ -69,3 +69,17 @@ body {
 	background-color: #dc3545;
 	color: white;
 }
+
+.online-indicator, .offline-indicator{
+	display: inline-block;
+}
+
+.offline-indicator-wifi {
+	position:absolute;
+	color:black;
+}
+
+.offline-indicator-slash {
+	position:relative;
+	color:red;
+}

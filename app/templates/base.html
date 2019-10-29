@@ -38,7 +38,7 @@
     <script src="{{ url_for('main_js') }}"></script>
 
     {# font awesome #}
-    <script src="https://kit.fontawesome.com/0e3459ebb5.js"></script>
+    <script src="{{ url_for('static', filename='js/font_awesome.min.js') }}"></script>
 
     {% block additional_js %}{% endblock %}
 </body>
