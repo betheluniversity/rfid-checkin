@@ -167,6 +167,34 @@ class View(FlaskView):
 
         return render_template('scan_alert.html', **locals())
 
+    @route('/send-offline-data', methods=['post'])
+    def send_offline_data(self):
+        form = request.form
+        scan_data = form.get("scan_data")
+        session_id = form.get("session_id")
+
+        card_data = re.findall("\[\[(.+?)\]\]", scan_data)
+
+        if card_data:
+            number_of_users = 0
+            for card_id in card_data:
+                try:
+                    username = self.wsapi.get_user_from_prox(card_id).get('username')
+                    user_data = self.wsapi.get_names_from_username(username)
+                    first_name = user_data.get('first_name')
+                    last_name = user_data.get('last_name')
+
+                    self.banner.scan_user(session_id, card_id, username, first_name, last_name)
+                    number_of_users += 1
+                except:
+                    continue
+
+            alert_type = 'info'
+            alert_message = 'Offline Sync: {} users were scanned into the system.'.format(number_of_users)
+            return render_template('scan_alert.html', **locals())
+        else:
+            # if there isn't data, not need to display anything.
+            return ''
 
     @route('/download-csv/<session_id>', methods=['get'])
     def download_csv(self, session_id):
