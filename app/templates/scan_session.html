@@ -9,11 +9,11 @@
             <i class="fas fa-2x fa-wifi"></i>
         </div>
         {# offline indicator #}
-        <div class="offline-indicator"  data-toggle="tooltip" data-placement="top" title="ERROR: Not connected to the Internet! You need to reconnect to the Internet to use this scan session.">
+        <div class="offline-indicator"  data-toggle="tooltip" data-placement="top" title="You are not connected to the Internet. Scan data will be stored in your browser. Once you connect to the Internet, the scan data will be uploaded.">
             <i class="fas fa-2x fa-wifi offline-indicator-wifi"></i>
             <i class="fas fa-2x fa-slash offline-indicator-slash"></i>
             {# This starts off hidden, but gets shown when the user is offline and there is data. #}
-            <p id="offline-data-message">Offline data needs to sync. Please connect to the Internet so you don't lose the data. This data will be stored</p>
+            <p id="offline-data-message">Offline data needs to sync. Please connect to the Internet so you don't lose the data. This data will be stored in your browser until you clear your cache and cookies, or the data syncs.</p>
         </div>
 
         <p>Welcome! Scan your id to sign in.</p>
