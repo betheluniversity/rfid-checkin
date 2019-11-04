@@ -9,9 +9,11 @@
             <i class="fas fa-2x fa-wifi"></i>
         </div>
         {# offline indicator #}
-        <div class="offline-indicator"  data-toggle="tooltip" data-placement="top" title="ERROR: Not connected to the Internet! You need to fix reconnect to the Internet to use this scan session.">
+        <div class="offline-indicator"  data-toggle="tooltip" data-placement="top" title="ERROR: Not connected to the Internet! You need to reconnect to the Internet to use this scan session.">
             <i class="fas fa-2x fa-wifi offline-indicator-wifi"></i>
             <i class="fas fa-2x fa-slash offline-indicator-slash"></i>
+            {# This starts off hidden, but gets shown when the user is offline and there is data. #}
+            <p id="offline-data-message">Offline data needs to sync. Please connect to the Internet so you don't lose the data. This data will be stored</p>
         </div>
 
         <p>Welcome! Scan your id to sign in.</p>
@@ -34,6 +36,8 @@
                         'scan': input,
                         'session_id': "{{ session_id }}"
                     };
+                    // by setting the variable "that", we allow input to be used inside.
+                    var that = input;
                     $.post(url, scannedInput, function (data) {
                         $('.alert-container').append(data);
                         $(".alert-dismissible").fadeTo(5000, 500).slideUp(500, function () {
@@ -56,30 +60,76 @@
                         $(".alert-dismissible").fadeTo(5000, 500).slideUp(500, function () {
                             $(this).alert('close');
                         });
+
+                        var current_session_data = window.localStorage.getItem('{{ session_id }}');
+                        // if the data doesn't exists, then clear it from a None value to an empty string
+                        if( !current_session_data ) {
+                            current_session_data = ''
+                        }
+                        // the variable "that" is set above the post method. It stores the data of the card id.
+                        window.localStorage.setItem('{{ session_id }}', current_session_data + that);
+
+                        // show the user there is offline data.
+                        $('#offline-data-message').show();
+                        input = '';
                     });
                     input = "";
                 }else{
-                    input = input + key.key;
+                    // only allow valid characters
+                    if( '[]0123456789'.includes(key.key) ){
+                        input = input + key.key;
+                    }
                 }
             });
 
             // add event listeners to offline/online indicators
-            window.addEventListener('offline', function(e) {
-                $('.offline-indicator').show();
-                $('.online-indicator').hide();
+            window.addEventListener('offline', function() {
+                change_to_offline();
             });
-            window.addEventListener('online', function(e) {
-                $('.offline-indicator').hide();
-                $('.online-indicator').show();
+            window.addEventListener('online', function() {
+                change_to_online();
             });
 
             // show/hide initial offline/online indicators
             if( navigator.onLine ) {
+                change_to_online();
+            } else {
+                change_to_offline();
+            }
+
+            function change_to_online(){
                 $('.offline-indicator').hide();
                 $('.online-indicator').show();
-            } else {
+                $('#offline-data-message').hide();
+
+                // check if there is data to send
+                var storage_data = window.localStorage.getItem('{{ session_id }}');
+                if( storage_data ) {
+                    var url = "{{ url_for('View:send_offline_data') }}";
+                    var scannedInput = {
+                        'scan_data': storage_data,
+                        'session_id': "{{ session_id }}",
+                    };
+                    $.post(url, scannedInput, function (data) {
+                        if (data){
+                            $('.alert-container').append(data);
+                            $(".alert-dismissible").fadeTo(5000, 500).slideUp(500, function () {
+                                $(this).alert('close');
+                            });
+                        }
+                        window.localStorage.removeItem('{{ session_id }}');
+                    });
+                }
+            }
+
+            function change_to_offline(){
                 $('.offline-indicator').show();
                 $('.online-indicator').hide();
+
+                var storage_data = window.localStorage.getItem('{{ session_id }}');
+                if( storage_data ) {
+                    $('#offline-data-message').show();
+                }
             }
 
             // initialize tooltips

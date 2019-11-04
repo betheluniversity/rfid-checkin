@@ -83,3 +83,7 @@ body {
 	position:relative;
 	color:red;
 }
+
+#offline-data-message {
+	display: none;
+}

@@ -162,18 +162,44 @@ class View(FlaskView):
                 alert_type = 'success'
                 alert_message = 'Thank you for signing in, {} {}.'.format(first_name, last_name)
             except:
-                # if we are able to get the card_id but no data for them, still record their data.
                 if card_id:
-                    self.banner.scan_user(session_id, card_id)
-                    alert_type = 'warning'
-                    alert_message = 'Thank you for signing in, {}. Your username could not be found in Banner. Please try again or contact the Help Desk at helpdesk@bethel.edu.'.format(card_id)
+                    alert_message = 'ERROR: Failed sign in the user with Card ID, {}'.format(card_id)
                 else:
-                    alert_message = 'ERROR: Failed to get the card ID. Please try again.'
+                    alert_message = 'ERROR: Failed to read the card scan.'
         else:
             alert_message = 'ERROR: Failed to get the card ID. Please try again.'
 
         return render_template('scan_alert.html', **locals())
 
+    @route('/send-offline-data', methods=['post'])
+    def send_offline_data(self):
+        form = request.form
+        scan_data = form.get("scan_data")
+        session_id = form.get("session_id")
+
+        card_data = re.findall("\[\[(\d+?)\]\]", scan_data)
+
+        if card_data:
+            number_of_users = 0
+            for card_id in card_data:
+                try:
+                    card_id = int(card_id)
+                    username = self.wsapi.get_user_from_prox(card_id).get('username')
+                    user_data = self.wsapi.get_names_from_username(username)
+                    first_name = user_data.get('first_name')
+                    last_name = user_data.get('last_name')
+
+                    self.banner.scan_user(session_id, card_id, username, first_name, last_name)
+                    number_of_users += 1
+                except:
+                    continue
+
+            alert_type = 'info'
+            alert_message = 'Offline Sync: {} users were scanned into the system.'.format(number_of_users)
+            return render_template('scan_alert.html', **locals())
+        else:
+            # if there isn't data, not need to display anything.
+            return ''
 
     @route('/download-csv/<session_id>', methods=['get'])
     def download_csv(self, session_id):
