@@ -150,6 +150,7 @@ class View(FlaskView):
 
         alert_type = 'danger'
         if card_data:
+            card_id = ''
             try:
                 card_id = card_data.group(1)
                 username = self.wsapi.get_user_from_prox(card_id).get('username')
@@ -161,7 +162,10 @@ class View(FlaskView):
                 alert_type = 'success'
                 alert_message = 'Thank you for signing in, {} {}.'.format(first_name, last_name)
             except:
-                alert_message = 'ERROR: Failed sign in the user with Card ID, {}'.format(card_id)
+                if card_id:
+                    alert_message = 'ERROR: Failed sign in the user with Card ID, {}'.format(card_id)
+                else:
+                    alert_message = 'ERROR: Failed to read the card scan.'
         else:
             alert_message = 'ERROR: Failed to get the card ID. Please try again.'
 
@@ -173,12 +177,13 @@ class View(FlaskView):
         scan_data = form.get("scan_data")
         session_id = form.get("session_id")
 
-        card_data = re.findall("\[\[(.+?)\]\]", scan_data)
+        card_data = re.findall("\[\[(\d+?)\]\]", scan_data)
 
         if card_data:
             number_of_users = 0
             for card_id in card_data:
                 try:
+                    card_id = int(card_id)
                     username = self.wsapi.get_user_from_prox(card_id).get('username')
                     user_data = self.wsapi.get_names_from_username(username)
                     first_name = user_data.get('first_name')
