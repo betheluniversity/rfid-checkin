@@ -75,7 +75,10 @@
                     });
                     input = "";
                 }else{
-                    input = input + key.key;
+                    // only allow valid characters
+                    if( '[]0123456789'.includes(key.key) ){
+                        input = input + key.key;
+                    }
                 }
             });
 
