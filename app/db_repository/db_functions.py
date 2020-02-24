@@ -25,8 +25,12 @@ class Banner():
                 WHERE BU_RFID_SCANNER_SESSIONS.owner_username=:username AND BU_RFID_SCANNER_SESSIONS.deleted='N'
                 ORDER BY BU_RFID_SCANNER_SESSIONS.ID DESC
             """, username=username)
-            return self._result_proxy_to_dicts(results)
+            _return = self._result_proxy_to_dicts(results)
+            results.close()
+            return _return
         except:
+            if results:
+                results.close()
             return []
 
     def start_session(self, session_id):
@@ -36,8 +40,12 @@ class Banner():
                 SET status='Open'
                 WHERE id=:session_id and (status='Open' or status='Archived')
             """, session_id=session_id)
-            return True
+            _return = True
+            results.close()
+            return _return
         except:
+            if results:
+                results.close()
             return False
 
     def close_session(self, session_id):
@@ -47,8 +55,12 @@ class Banner():
                 SET status='Archived'
                 WHERE id=:session_id and status='Open'
             """, session_id=session_id)
-            return True
+            _return = True
+            results.close()
+            return _return
         except:
+            if results:
+                results.close()
             return False
 
     def delete_session(self, session_id):
@@ -58,8 +70,12 @@ class Banner():
                 SET deleted='Y'
                 WHERE id=:session_id
             """, session_id=session_id)
-            return True
+            _return = True
+            results.close()
+            return _return
         except:
+            if results:
+                results.close()
             return False
 
     def create_new_session(self, username, form_name, form_description):
@@ -68,8 +84,12 @@ class Banner():
                 INSERT INTO BU_RFID_SCANNER_SESSIONS (FORM_NAME, OWNER_USERNAME, DESCRIPTION)
                 VALUES(:form_name, :username, :form_description)
             """, form_name=form_name, username=username, form_description=form_description)
-            return True
+            _return = True
+            results.close()
+            return _return
         except:
+            if results:
+                results.close()
             return False
 
     def edit_session(self, session_id, form_name, form_description):
@@ -79,8 +99,12 @@ class Banner():
                 SET form_name=:form_name,description=:form_description
                 WHERE id=:session_id
             """, form_name=form_name, form_description=form_description, session_id=session_id)
-            return True
+            _return = True
+            results.close()
+            return _return
         except:
+            if results:
+                results.close()
             return False
 
     def scan_user(self, session_id, card_id, username=None, first_name=None, last_name=None):
@@ -89,8 +113,12 @@ class Banner():
                 INSERT INTO BU_RFID_SCANNER_SCANS (session_id, card_id, username, first_name, last_name, scan_datetime)
                 VALUES(:session_id, :card_id, :username, :first_name, :last_name, CURRENT_TIMESTAMP)
             """, session_id=session_id, card_id=card_id, username=username, first_name=first_name, last_name=last_name)
-            return True
+            _return = True
+            results.close()
+            return _return
         except:
+            if results:
+                results.close()
             return False
 
     def get_session(self, session_id):
@@ -100,8 +128,12 @@ class Banner():
                 FROM BU_RFID_SCANNER_SESSIONS 
                 WHERE id=:session_id AND deleted='N'
             """, session_id=session_id)
-            return self._result_proxy_to_dicts(results)[0]
+            _return = self._result_proxy_to_dicts(results)[0]
+            results.close()
+            return _return
         except IndexError:
+            if results:
+                results.close()
             return {}
 
     def get_session_data_for_csv(self, session_id):
@@ -112,8 +144,12 @@ class Banner():
                 WHERE session_id=:session_id
                 ORDER BY scan_datetime
             """, session_id=session_id)
-            return self._result_proxy_to_dicts(results)
+            _return = self._result_proxy_to_dicts(results)
+            results.close()
+            return _return
         except:
+            if results:
+                results.close()
             return {}
 
     def get_number_of_scans_for_session(self, session_id):
@@ -123,8 +159,12 @@ class Banner():
                 FROM BU_RFID_SCANNER_SCANS
                 WHERE session_id=:session_id
             """, session_id=session_id)
-            return self._result_proxy_to_dicts(results)[0]
+            _return = self._result_proxy_to_dicts(results)[0]
+            results.close()
+            return _return
         except IndexError:
+            if results:
+                results.close()
             return {}
 
     def can_user_access_session(self, username, session_id):
@@ -134,6 +174,10 @@ class Banner():
                 FROM BU_RFID_SCANNER_SESSIONS
                 WHERE id=:session_id AND owner_username=:username
             """, session_id=session_id, username=username)
-            return len(self._result_proxy_to_dicts(results)[0])
+            _return = len(self._result_proxy_to_dicts(results)[0])
+            results.close()
+            return _return
         except IndexError:
+            if results:
+                results.close()
             return {}
