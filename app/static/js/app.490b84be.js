@@ -214,10 +214,7 @@
       },
       u = [],
       d = {
-        props: ["test", "checkin"],
-        data: function () {
-          return { scan_datetime: "" };
-        },
+        props: ["checkin"],
         methods: {
           completeCheckin: function (t) {
             var e = !t.complete,
@@ -251,9 +248,9 @@
           },
         },
       },
-      m = k,
-      v = Object(h["a"])(m, o, l, !1, null, "143e5370", null),
-      y = v.exports,
+      v = k,
+      m = Object(h["a"])(v, o, l, !1, null, "143e5370", null),
+      y = m.exports,
       _ = i("2f62"),
       C = {
         all: function (t) {
@@ -336,7 +333,7 @@
         loadCheckins: function (t) {
           var e = 121;
           x.a
-            .get("http://127.0.0.1:5000/get-checkins/" + e)
+            .get("/get-checkins/" + e)
             .then(function (e) {
               t.commit("saveCheckins", e.data.checkins);
             })
@@ -346,7 +343,7 @@
         },
         updateCheckin: function (t, e) {
           x.a
-            .post("http://127.0.0.1:5000/update-checkin", {
+            .post("/update-checkin", {
               id: parseInt(e.id),
               completed: e.completed,
             })
@@ -379,4 +376,4 @@
       });
   },
 });
-//# sourceMappingURL=app.0546d411.js.map
+//# sourceMappingURL=app.490b84be.js.map

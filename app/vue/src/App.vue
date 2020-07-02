@@ -17,13 +17,11 @@ var filters = {
   all: function (checkins) {
     return checkins;
   },
-
   completed: function (checkins) {
     return checkins.filter(function (checkin) {
       return checkin.completed == 1;
     });
   },
-
   not_completed: function (checkins) {
     return checkins.filter(function (checkin) {
       return checkin.completed == 0;
@@ -58,7 +56,6 @@ export default {
   data() {
     return {
       filters: filters,
-      // editedCheckin: null,
     };
   },
 };

@@ -37,7 +37,7 @@ const actions = {
   loadCheckins(context) {
     var session = 121;
     axios
-      .get("http://127.0.0.1:5000/get-checkins/" + session)
+      .get("/get-checkins/" + session)
       .then((result) => {
         context.commit("saveCheckins", result.data.checkins);
       })
@@ -48,7 +48,7 @@ const actions = {
 
   updateCheckin(context, checkin) {
     axios
-      .post("http://127.0.0.1:5000/update-checkin", {
+      .post("/update-checkin", {
         id: parseInt(checkin.id),
         completed: checkin.completed,
       })
