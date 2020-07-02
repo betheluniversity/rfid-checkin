@@ -214,6 +214,12 @@ class View(FlaskView):
         session_name = '{} {}'.format(scan_session.get('form_name'), datetime.now().strftime('%m/%d/%Y'))
         return self._export_csv(session_data, session_name)
 
+    @route('/stream-session/<session_id>', methods=['GET'])
+    def stream_session(self, session_id):
+
+        session_data = self.banner.get_session_data_for_csv(session_id)
+        return render_template('stream_session.html', **locals())
+
     def _export_csv(self, data, csv_name):
         def generate():
             w = StringIO()
