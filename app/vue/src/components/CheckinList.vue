@@ -1,26 +1,29 @@
 <template>
   <div>
-    <div>
+    <div class="row">
       <button
+        class="btn btn-link"
         v-on:click="setVisibility('all')"
         :class="{ selected: getVisibility == 'all' }"
       >
         All
       </button>
       <button
+        class="btn btn-link"
         v-on:click="setVisibility('completed')"
         :class="{ selected: getVisibility == 'completed' }"
       >
         Completed
       </button>
       <button
+        class="btn btn-link"
         v-on:click="setVisibility('not_completed')"
         :class="{ selected: getVisibility == 'not_completed' }"
       >
         Not Completed
       </button>
     </div>
-    <table>
+    <table class="table">
       <thead>
         <th>ID</th>
         <th>Completed</th>

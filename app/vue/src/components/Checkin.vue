@@ -4,7 +4,11 @@
     <td>{{ checkin.completed }}</td>
     <td>{{ checkin.card_id }}</td>
     <td>{{ checkin.scan_datetime }}</td>
-    <td><button v-on:click="completeCheckin(checkin)">complete</button></td>
+    <td>
+      <button class="btn btn-secondary" v-on:click="completeCheckin(checkin)">
+        complete
+      </button>
+    </td>
   </tr>
 </template>
 
