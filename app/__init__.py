@@ -1,17 +1,18 @@
 from datetime import datetime
 
 from flask import Flask, render_template, make_response, redirect, session
+from flask_cors import CORS
 
 import sentry_sdk
 
 app = Flask(__name__)
 app.config.from_object('config')
 app.url_map.strict_slashes = False
+CORS(app)
 
 if app.config['SENTRY_URL']:
     from sentry_sdk.integrations.flask import FlaskIntegration
     sentry_sdk.init(dsn=app.config['SENTRY_URL'], integrations=[FlaskIntegration()])
-
 from app.views import View
 from app.controllers import RFIDController
 

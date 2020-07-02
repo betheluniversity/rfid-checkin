@@ -181,3 +181,36 @@ class Banner():
             if results:
                 results.close()
             return {}
+
+    def get_checkins_for_session(self, session_id):
+        try:
+            results = self.engine.execute("""
+                SELECT id, completed, scan_datetime, first_name, last_name, username, card_id
+                FROM BU_RFID_SCANNER_SCANS
+                WHERE session_id=:session_id
+                ORDER BY scan_datetime
+            """, session_id=session_id)
+            _return = self._result_proxy_to_dicts(results)
+            results.close()
+            return _return
+        except:
+            if results:
+                results.close()
+            return {}
+
+    def complete_checkin(self, checkin_id):
+        self.engine.execute("""
+           UPDATE BU_RFID_SCANNER_SCANS
+           SET 
+               completed = CASE WHEN completed = 0 then 1 else 0 end
+           WHERE id=:checkin_id
+        """, checkin_id=checkin_id)
+
+        results = self.engine.execute("""
+                        SELECT id, completed, scan_datetime, first_name, last_name, username, card_id
+                        FROM BU_RFID_SCANNER_SCANS
+                        WHERE id=:checkin_id
+                    """, checkin_id=checkin_id)
+        _return = self._result_proxy_to_dicts(results)
+        results.close()
+        return _return

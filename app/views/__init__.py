@@ -216,9 +216,27 @@ class View(FlaskView):
 
     @route('/stream-session/<session_id>', methods=['GET'])
     def stream_session(self, session_id):
+        app.template_folder = 'static/vue'
 
-        session_data = self.banner.get_session_data_for_csv(session_id)
-        return render_template('stream_session.html', **locals())
+        # session_data = self.banner.get_session_data_for_csv(session_id)
+        return render_template('index.html', **locals())
+
+
+    @route('get-checkins/<session_id>', methods=['GET'])
+    def get_checkins(self, session_id):
+
+        session_data = self.banner.get_checkins_for_session(session_id)
+        return {'checkins': session_data}
+
+    @route('update-checkin', methods=['POST'])
+    def update_checkin(self):
+
+        checkin_data = request.json
+        results = self.banner.complete_checkin(checkin_data.get('id'))
+        if len(results):
+            return results[0]
+        else:
+            abort(500)
 
     def _export_csv(self, data, csv_name):
         def generate():
