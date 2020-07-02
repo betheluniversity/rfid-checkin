@@ -72,7 +72,7 @@ class View(FlaskView):
             self.controller.set_alert('danger', 'ERROR: Failed to create the session, {}.'.format(form_name))
 
         # rfid_sessions = self.banner.get_sessions_for_user(session.get('username'))
-        # return render_template('index.html', **locals())
+        # return render_template('stream.html', **locals())
         return redirect(url_for('View:index'))
 
     @route('/delete-session', methods=['POST'])
@@ -216,10 +216,10 @@ class View(FlaskView):
 
     @route('/stream-session/<session_id>', methods=['GET'])
     def stream_session(self, session_id):
-        app.template_folder = 'static/vue'
+        # app.template_folder = 'static/vue'
 
         # session_data = self.banner.get_session_data_for_csv(session_id)
-        return render_template('index.html', **locals())
+        return render_template('stream_session.html', **locals())
 
 
     @route('get-checkins/<session_id>', methods=['GET'])
