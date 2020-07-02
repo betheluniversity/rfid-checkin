@@ -5,10 +5,6 @@ const state = () => ({
   checkins: [],
 });
 
-const getters = {
-  // Here we will create a getter
-};
-
 const mutations = {
   setVisibility(state, visibility) {
     state.visibility = visibility;
@@ -35,7 +31,8 @@ const actions = {
 
   // loadCheckins(context, session) {
   loadCheckins(context) {
-    var session = 121;
+    var u = new URL(location.href);
+    var session = u.href.split("/").slice(-1)[0];
     axios
       .get("/get-checkins/" + session)
       .then((result) => {

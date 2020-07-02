@@ -14,6 +14,7 @@ const vuexPersist = new VuexPersist({
 Vue.use(Vuex, VueAxios, axios);
 
 window.axios = axios;
+// not sure I need to set this URL since its the same domain
 axios.defaults.baseURL = process.env.VUE_APP_API_URL;
 
 const debug = process.env.NODE_ENV !== "production";
