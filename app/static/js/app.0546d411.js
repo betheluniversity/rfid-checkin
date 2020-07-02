@@ -1,58 +1,58 @@
 (function (t) {
   function e(e) {
     for (
-      var n, s, o = e[0], l = e[1], a = e[2], d = 0, f = [];
+      var n, r, o = e[0], l = e[1], a = e[2], d = 0, f = [];
       d < o.length;
       d++
     )
-      (s = o[d]),
-        Object.prototype.hasOwnProperty.call(c, s) && c[s] && f.push(c[s][0]),
-        (c[s] = 0);
+      (r = o[d]),
+        Object.prototype.hasOwnProperty.call(c, r) && c[r] && f.push(c[r][0]),
+        (c[r] = 0);
     for (n in l) Object.prototype.hasOwnProperty.call(l, n) && (t[n] = l[n]);
     u && u(e);
     while (f.length) f.shift()();
-    return r.push.apply(r, a || []), i();
+    return s.push.apply(s, a || []), i();
   }
   function i() {
-    for (var t, e = 0; e < r.length; e++) {
-      for (var i = r[e], n = !0, o = 1; o < i.length; o++) {
+    for (var t, e = 0; e < s.length; e++) {
+      for (var i = s[e], n = !0, o = 1; o < i.length; o++) {
         var l = i[o];
         0 !== c[l] && (n = !1);
       }
-      n && (r.splice(e--, 1), (t = s((s.s = i[0]))));
+      n && (s.splice(e--, 1), (t = r((r.s = i[0]))));
     }
     return t;
   }
   var n = {},
     c = { app: 0 },
-    r = [];
-  function s(e) {
+    s = [];
+  function r(e) {
     if (n[e]) return n[e].exports;
     var i = (n[e] = { i: e, l: !1, exports: {} });
-    return t[e].call(i.exports, i, i.exports, s), (i.l = !0), i.exports;
+    return t[e].call(i.exports, i, i.exports, r), (i.l = !0), i.exports;
   }
-  (s.m = t),
-    (s.c = n),
-    (s.d = function (t, e, i) {
-      s.o(t, e) || Object.defineProperty(t, e, { enumerable: !0, get: i });
+  (r.m = t),
+    (r.c = n),
+    (r.d = function (t, e, i) {
+      r.o(t, e) || Object.defineProperty(t, e, { enumerable: !0, get: i });
     }),
-    (s.r = function (t) {
+    (r.r = function (t) {
       "undefined" !== typeof Symbol &&
         Symbol.toStringTag &&
         Object.defineProperty(t, Symbol.toStringTag, { value: "Module" }),
         Object.defineProperty(t, "__esModule", { value: !0 });
     }),
-    (s.t = function (t, e) {
-      if ((1 & e && (t = s(t)), 8 & e)) return t;
+    (r.t = function (t, e) {
+      if ((1 & e && (t = r(t)), 8 & e)) return t;
       if (4 & e && "object" === typeof t && t && t.__esModule) return t;
       var i = Object.create(null);
       if (
-        (s.r(i),
+        (r.r(i),
         Object.defineProperty(i, "default", { enumerable: !0, value: t }),
         2 & e && "string" != typeof t)
       )
         for (var n in t)
-          s.d(
+          r.d(
             i,
             n,
             function (e) {
@@ -61,7 +61,7 @@
           );
       return i;
     }),
-    (s.n = function (t) {
+    (r.n = function (t) {
       var e =
         t && t.__esModule
           ? function () {
@@ -70,18 +70,18 @@
           : function () {
               return t;
             };
-      return s.d(e, "a", e), e;
+      return r.d(e, "a", e), e;
     }),
-    (s.o = function (t, e) {
+    (r.o = function (t, e) {
       return Object.prototype.hasOwnProperty.call(t, e);
     }),
-    (s.p = "/");
+    (r.p = "/");
   var o = (window["webpackJsonp"] = window["webpackJsonp"] || []),
     l = o.push.bind(o);
   (o.push = e), (o = o.slice());
   for (var a = 0; a < o.length; a++) e(o[a]);
   var u = l;
-  r.push([0, "chunk-vendors"]), i();
+  s.push([0, "chunk-vendors"]), i();
 })({
   0: function (t, e, i) {
     t.exports = i("56d7");
@@ -110,8 +110,8 @@
           1
         );
       },
-      r = [],
-      s = (i("4de4"), i("5530")),
+      s = [],
+      r = (i("4de4"), i("5530")),
       o = function () {
         var t = this,
           e = t.$createElement,
@@ -119,8 +119,9 @@
         return i("div", [
           i("div", { staticClass: "row" }, [
             i(
-              "a",
+              "button",
               {
+                staticClass: "btn btn-link",
                 class: { selected: "all" == t.getVisibility },
                 on: {
                   click: function (e) {
@@ -131,8 +132,9 @@
               [t._v(" All ")]
             ),
             i(
-              "a",
+              "button",
               {
+                staticClass: "btn btn-link",
                 class: { selected: "completed" == t.getVisibility },
                 on: {
                   click: function (e) {
@@ -143,8 +145,9 @@
               [t._v(" Completed ")]
             ),
             i(
-              "a",
+              "button",
               {
+                staticClass: "btn btn-link",
                 class: { selected: "not_completed" == t.getVisibility },
                 on: {
                   click: function (e) {
@@ -225,7 +228,6 @@
             });
           },
         },
-        created: function () {},
       },
       f = d,
       h = i("2877"),
@@ -247,16 +249,13 @@
           getVisibility: function () {
             return this.visibility;
           },
-          remaining: function () {
-            return this.filters.active(this.checkins).length;
-          },
         },
       },
       m = k,
-      v = Object(h["a"])(m, o, l, !1, null, "594f0a30", null),
+      v = Object(h["a"])(m, o, l, !1, null, "143e5370", null),
       y = v.exports,
       _ = i("2f62"),
-      g = {
+      C = {
         all: function (t) {
           return t;
         },
@@ -271,7 +270,7 @@
           });
         },
       },
-      C = {
+      g = {
         name: "App",
         components: { CheckinList: y },
         methods: {
@@ -279,7 +278,7 @@
             this.$store.dispatch("checkins/setVisibility", t);
           },
         },
-        computed: Object(s["a"])(
+        computed: Object(r["a"])(
           {},
           Object(_["b"])({
             visibility: function (t) {
@@ -294,11 +293,11 @@
           this.$store.dispatch("checkins/loadCheckins");
         },
         data: function () {
-          return { filters: g };
+          return { filters: C };
         },
       },
-      w = C,
-      O = Object(h["a"])(w, c, r, !1, null, null, null),
+      w = g,
+      O = Object(h["a"])(w, c, s, !1, null, null, null),
       V = O.exports,
       j = i("bfa9"),
       P = i("bc3a"),
@@ -380,4 +379,4 @@
       });
   },
 });
-//# sourceMappingURL=app.e1e3ed17.js.map
+//# sourceMappingURL=app.0546d411.js.map

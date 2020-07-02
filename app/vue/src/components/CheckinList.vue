@@ -61,9 +61,6 @@ export default {
     getVisibility: function () {
       return this.visibility;
     },
-    remaining: function () {
-      return this.filters.active(this.checkins).length;
-    },
   },
 };
 </script>

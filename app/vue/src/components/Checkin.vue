@@ -30,13 +30,5 @@ export default {
       });
     },
   },
-
-  created() {
-    // this.scan_datetime = this.checkin.scan_datetime;
-    // this.description = this.todo.Description;
-    // this.url = this.todo.Url;
-    // this.id = this.todo.Id;
-    // this.active = this.todo.Active;
-  },
 };
 </script>
