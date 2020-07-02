@@ -215,6 +215,9 @@
       u = [],
       d = {
         props: ["checkin"],
+        data: function () {
+          return { scan_datetime: "" };
+        },
         methods: {
           completeCheckin: function (t) {
             var e = !t.complete,
@@ -248,9 +251,9 @@
           },
         },
       },
-      v = k,
-      m = Object(h["a"])(v, o, l, !1, null, "143e5370", null),
-      y = m.exports,
+      m = k,
+      v = Object(h["a"])(m, o, l, !1, null, "143e5370", null),
+      y = v.exports,
       _ = i("2f62"),
       C = {
         all: function (t) {
@@ -317,7 +320,8 @@
         function () {
           return { visibility: "all", checkins: [] };
         }),
-      I = {
+      I = {},
+      U = {
         setVisibility: function (t, e) {
           t.visibility = e;
         },
@@ -332,7 +336,7 @@
           t.checkins.splice(n, 1, e);
         },
       },
-      U = {
+      D = {
         setVisibility: function (t, e) {
           t.commit("setVisibility", e);
         },
@@ -362,31 +366,25 @@
             });
         },
       },
-      D = {
-        namespaced: !0,
-        state: L,
-        getters: getters,
-        actions: U,
-        mutations: I,
-      },
-      M = new j["a"]({ key: "checkins", storage: window.localStorage });
+      M = { namespaced: !0, state: L, getters: I, actions: D, mutations: U },
+      R = new j["a"]({ key: "checkins", storage: window.localStorage });
     n["a"].use(_["a"], S.a, x.a),
       (window.axios = x.a),
       (x.a.defaults.baseURL = Object({
         NODE_ENV: "production",
         BASE_URL: "/",
       }).VUE_APP_API_URL);
-    var R = !1,
-      N = R ? [A()(), M.plugin] : [M.plugin],
-      T = new _["a"].Store({ plugins: N, modules: { checkins: D }, strict: R });
+    var N = !1,
+      T = N ? [A()(), R.plugin] : [R.plugin],
+      J = new _["a"].Store({ plugins: T, modules: { checkins: M }, strict: N });
     (n["a"].config.productionTip = !1),
       new n["a"]({
         el: "#app",
-        store: T,
+        store: J,
         render: function (t) {
           return t(V);
         },
       });
   },
 });
-//# sourceMappingURL=app.58731b61.js.map
+//# sourceMappingURL=app.d019794b.js.map

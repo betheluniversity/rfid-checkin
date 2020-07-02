@@ -5,6 +5,10 @@ const state = () => ({
   checkins: [],
 });
 
+const getters = {
+  // Here we will create a getter
+};
+
 const mutations = {
   setVisibility(state, visibility) {
     state.visibility = visibility;

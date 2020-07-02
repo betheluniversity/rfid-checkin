@@ -15,6 +15,11 @@
 <script type="text/javascript">
 export default {
   props: ["checkin"],
+  data() {
+    return {
+      scan_datetime: "",
+    };
+  },
   methods: {
     completeCheckin(checkin) {
       const completed = !checkin.complete;
