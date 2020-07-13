@@ -25,15 +25,13 @@
     </div>
     <table class="table">
       <thead>
-        <th>ID</th>
-        <th>Completed</th>
+        <th>Bethel ID</th>
         <th>Card ID</th>
         <th>Datetime</th>
       </thead>
       <Checkin
         v-for="checkin in filteredCheckins"
         :checkin="checkin"
-        :test="checkin.scan_datetime"
         :key="checkin.id"
       >
       </Checkin>

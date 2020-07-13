@@ -184,11 +184,15 @@ class Banner():
 
     def get_checkins_for_session(self, session_id):
         try:
+            # join on spriden and gobtpac in order to display current bethel id when needed
             results = self.engine.execute("""
-                SELECT id, completed, scan_datetime, first_name, last_name, username, card_id
-                FROM BU_RFID_SCANNER_SCANS
-                WHERE session_id=:session_id
-                ORDER BY scan_datetime
+                select id, completed, scan_datetime, first_name, last_name, username, card_id, spriden_id as bethel_id, gobtpac_external_user
+                from banweb.BU_RFID_SCANNER_SCANS, spriden, gobtpac
+                where spriden_change_ind is null
+                and spriden_pidm = gobtpac_pidm
+                and gobtpac_external_user=BU_RFID_SCANNER_SCANS.username
+                and SESSION_ID=:session_id
+                order by scan_datetime
             """, session_id=session_id)
             _return = self._result_proxy_to_dicts(results)
             results.close()

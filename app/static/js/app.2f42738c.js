@@ -164,10 +164,7 @@
             [
               t._m(0),
               t._l(t.filteredCheckins, function (t) {
-                return i("Checkin", {
-                  key: t.id,
-                  attrs: { checkin: t, test: t.scan_datetime },
-                });
+                return i("Checkin", { key: t.id, attrs: { checkin: t } });
               }),
             ],
             2
@@ -180,8 +177,7 @@
             e = t.$createElement,
             i = t._self._c || e;
           return i("thead", [
-            i("th", [t._v("ID")]),
-            i("th", [t._v("Completed")]),
+            i("th", [t._v("Bethel ID")]),
             i("th", [t._v("Card ID")]),
             i("th", [t._v("Datetime")]),
           ]);
@@ -192,8 +188,7 @@
           e = t.$createElement,
           i = t._self._c || e;
         return i("tr", [
-          i("td", [t._v(t._s(t.checkin.id))]),
-          i("td", [t._v(t._s(t.checkin.completed))]),
+          i("td", [t._v(t._s(t.checkin.bethel_id))]),
           i("td", [t._v(t._s(t.checkin.card_id))]),
           i("td", [t._v(t._s(t.checkin.scan_datetime))]),
           i("td", [
@@ -251,9 +246,9 @@
           },
         },
       },
-      m = k,
-      v = Object(h["a"])(m, o, l, !1, null, "143e5370", null),
-      y = v.exports,
+      v = k,
+      m = Object(h["a"])(v, o, l, !1, null, "1c6687d6", null),
+      y = m.exports,
       _ = i("2f62"),
       C = {
         all: function (t) {
@@ -376,15 +371,15 @@
       }).VUE_APP_API_URL);
     var N = !1,
       T = N ? [A()(), R.plugin] : [R.plugin],
-      J = new _["a"].Store({ plugins: T, modules: { checkins: M }, strict: N });
+      B = new _["a"].Store({ plugins: T, modules: { checkins: M }, strict: N });
     (n["a"].config.productionTip = !1),
       new n["a"]({
         el: "#app",
-        store: J,
+        store: B,
         render: function (t) {
           return t(V);
         },
       });
   },
 });
-//# sourceMappingURL=app.d019794b.js.map
+//# sourceMappingURL=app.2f42738c.js.map

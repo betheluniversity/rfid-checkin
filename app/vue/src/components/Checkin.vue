@@ -1,7 +1,6 @@
 <template>
   <tr>
-    <td>{{ checkin.id }}</td>
-    <td>{{ checkin.completed }}</td>
+    <td>{{ checkin.bethel_id }}</td>
     <td>{{ checkin.card_id }}</td>
     <td>{{ checkin.scan_datetime }}</td>
     <td>

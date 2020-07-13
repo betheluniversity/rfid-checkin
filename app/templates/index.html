@@ -52,6 +52,7 @@
                     <div class="row">
                         {% if rfid_session.get('status') == 'Open' %}
                             <a href="{{ url_for('View:go_to_session', session_id=rfid_session.get('id')) }}" class="col-12 mb-2 btn btn-success">Go to Session</a>
+                            <a href="{{ url_for('View:stream_session', session_id=rfid_session.get('id')) }}" class="col-12 mb-2 btn btn-info">Stream Session Checkins</a>
                             <a href="{{ url_for('View:download_csv', session_id=rfid_session.get('id')) }}" class="col-12 mb-2 btn btn-primary">Download CSV</a>
                             <a href="{{ url_for('View:archive_session', session_id=rfid_session.get('id')) }}" class="col-12 btn btn-secondary">Archive Session</a>
                         {% elif rfid_session.get('status') == 'Archived' %}
