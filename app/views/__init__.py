@@ -164,6 +164,7 @@ class View(FlaskView):
                     alert_message = 'Thank you for signing out, {} {}.'.format(first_name, last_name)
                 else:
                     alert_message = 'Thank you for signing in, {} {}.'.format(first_name, last_name)
+            # except what?
             except:
                 if card_id:
                     alert_message = 'ERROR: Failed sign in the user with Card ID, {}'.format(card_id)
@@ -223,7 +224,6 @@ class View(FlaskView):
 
         # session_data = self.banner.get_session_data_for_csv(session_id)
         return render_template('stream_session.html', **locals())
-
 
     @route('get-checkins/<session_id>', methods=['GET'])
     def get_checkins(self, session_id):
