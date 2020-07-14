@@ -141,11 +141,14 @@ class View(FlaskView):
             return abort(403)
         return render_template('scan_session.html', **locals())
 
-    @route('/no-cas/verify-scanner', methods=['post'])
+    @route('/no-cas/verify-scanner', methods=['get','post'])
     def verify_scanner(self):
-        form = request.form
-        scan = form.get("scan")
-        session_id = form.get("session_id")
+        # form = request.form
+        # scan = form.get("scan")
+        # session_id = form.get("session_id")
+        session_id = '161'
+        card_data = '[[34035]]'
+        scan = '[[34035]]'
         card_data = re.search("\[\[(.+?)\]\]", scan)
 
         alert_type = 'danger'
@@ -158,9 +161,12 @@ class View(FlaskView):
                 first_name = user_data.get('first_name')
                 last_name = user_data.get('last_name')
 
-                self.banner.scan_user(session_id, card_id, username, first_name, last_name)
+                scan_msg = self.banner.scan_user(session_id, card_id, username, first_name, last_name)
                 alert_type = 'success'
-                alert_message = 'Thank you for signing in, {} {}.'.format(first_name, last_name)
+                if scan_msg == 'check out':
+                    alert_message = 'Thank you for signing out, {} {}.'.format(first_name, last_name)
+                else:
+                    alert_message = 'Thank you for signing in, {} {}.'.format(first_name, last_name)
             except:
                 if card_id:
                     alert_message = 'ERROR: Failed sign in the user with Card ID, {}'.format(card_id)
