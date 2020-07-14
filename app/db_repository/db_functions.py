@@ -2,7 +2,7 @@ from sqlalchemy.exc import DatabaseError
 
 from app.db_repository import engine
 
-# todo can this not try/except and let views.py handle error?
+
 class Banner():
     def __init__(self):
         self.engine = engine
@@ -38,7 +38,7 @@ class Banner():
 
     def start_session(self, session_id):
         try:
-            results = self.engine.execute("""
+            self.engine.execute("""
                 UPDATE BU_RFID_SCANNER_SESSIONS
                 SET status='Open'
                 WHERE id=:session_id and (status='Open' or status='Archived')
@@ -49,7 +49,7 @@ class Banner():
 
     def close_session(self, session_id):
         try:
-            results = self.engine.execute("""
+            self.engine.execute("""
                 UPDATE BU_RFID_SCANNER_SESSIONS
                 SET status='Archived'
                 WHERE id=:session_id and status='Open'
@@ -60,7 +60,7 @@ class Banner():
 
     def delete_session(self, session_id):
         try:
-            results = self.engine.execute("""
+            self.engine.execute("""
                 UPDATE BU_RFID_SCANNER_SESSIONS
                 SET deleted='Y'
                 WHERE id=:session_id
@@ -72,7 +72,7 @@ class Banner():
     def create_new_session(self, username, form_name, form_description):
         try:
             # todo is this automatically closed?
-            results = self.engine.execute("""
+            self.engine.execute("""
                 INSERT INTO BU_RFID_SCANNER_SESSIONS (FORM_NAME, OWNER_USERNAME, DESCRIPTION)
                 VALUES(:form_name, :username, :form_description)
             """, form_name=form_name, username=username, form_description=form_description)

@@ -143,12 +143,9 @@ class View(FlaskView):
 
     @route('/no-cas/verify-scanner', methods=['get','post'])
     def verify_scanner(self):
-        # form = request.form
-        # scan = form.get("scan")
-        # session_id = form.get("session_id")
-        session_id = '161'
-        card_data = '[[34035]]'
-        scan = '[[34035]]'
+        form = request.form
+        scan = form.get("scan")
+        session_id = form.get("session_id")
         card_data = re.search("\[\[(.+?)\]\]", scan)
 
         alert_type = 'danger'
