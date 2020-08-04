@@ -51,11 +51,24 @@ export default {
 
   created() {
     this.$store.dispatch("checkins/loadCheckins");
+    // this.timer = setInterval(function () {
+    //   console.log("timer");
+    //   this.$store.dispatch("checkins/loadCheckins");
+    // }, 5000);
+
+    this.timer = setInterval(() => {
+      this.$store.dispatch("checkins/loadCheckins");
+    }, 3000);
+  },
+
+  beforeDestroy() {
+    clearInterval(this.timer);
   },
 
   data() {
     return {
       filters: filters,
+      timer: "",
     };
   },
 };

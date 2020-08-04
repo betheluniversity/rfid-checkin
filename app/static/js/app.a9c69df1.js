@@ -285,10 +285,17 @@
           })
         ),
         created: function () {
-          this.$store.dispatch("checkins/loadCheckins");
+          var t = this;
+          this.$store.dispatch("checkins/loadCheckins"),
+            (this.timer = setInterval(function () {
+              t.$store.dispatch("checkins/loadCheckins");
+            }, 3e3));
+        },
+        beforeDestroy: function () {
+          clearInterval(this.timer);
         },
         data: function () {
-          return { filters: C };
+          return { filters: C, timer: "" };
         },
       },
       w = g,
@@ -298,10 +305,10 @@
       P = i("bc3a"),
       x = i.n(P),
       E = i("a7fe"),
-      S = i.n(E),
-      $ = i("b054"),
-      A = i.n($),
-      L =
+      $ = i.n(E),
+      I = i("b054"),
+      S = i.n(I),
+      A =
         (i("7db0"),
         i("c975"),
         i("fb6a"),
@@ -315,8 +322,8 @@
         function () {
           return { visibility: "all", checkins: [] };
         }),
-      I = {},
-      U = {
+      L = {},
+      D = {
         setVisibility: function (t, e) {
           t.visibility = e;
         },
@@ -331,7 +338,7 @@
           t.checkins.splice(n, 1, e);
         },
       },
-      D = {
+      U = {
         setVisibility: function (t, e) {
           t.commit("setVisibility", e);
         },
@@ -361,16 +368,16 @@
             });
         },
       },
-      M = { namespaced: !0, state: L, getters: I, actions: D, mutations: U },
+      M = { namespaced: !0, state: A, getters: L, actions: U, mutations: D },
       R = new j["a"]({ key: "checkins", storage: window.localStorage });
-    n["a"].use(_["a"], S.a, x.a),
+    n["a"].use(_["a"], $.a, x.a),
       (window.axios = x.a),
       (x.a.defaults.baseURL = Object({
         NODE_ENV: "production",
         BASE_URL: "/",
       }).VUE_APP_API_URL);
     var N = !1,
-      T = N ? [A()(), R.plugin] : [R.plugin],
+      T = N ? [S()(), R.plugin] : [R.plugin],
       B = new _["a"].Store({ plugins: T, modules: { checkins: M }, strict: N });
     (n["a"].config.productionTip = !1),
       new n["a"]({
@@ -382,4 +389,4 @@
       });
   },
 });
-//# sourceMappingURL=app.2f42738c.js.map
+//# sourceMappingURL=app.a9c69df1.js.map

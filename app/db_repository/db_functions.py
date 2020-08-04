@@ -161,7 +161,7 @@ class Banner():
         try:
             # join on spriden and gobtpac in order to display current bethel id when needed
             results = self.engine.execute("""
-                select id, completed, scan_datetime, first_name, last_name, username, card_id, spriden_id as bethel_id, gobtpac_external_user
+                select id, completed, TO_CHAR(scan_datetime, 'MM/DD/YYYY HH:MI:SS') as scan_datetime, first_name, last_name, username, card_id, spriden_id as bethel_id, gobtpac_external_user
                 from banweb.BU_RFID_SCANNER_SCANS, spriden, gobtpac
                 where spriden_change_ind is null
                 and spriden_pidm = gobtpac_pidm
