@@ -72,7 +72,7 @@ class View(FlaskView):
             self.controller.set_alert('danger', 'ERROR: Failed to create the session, {}.'.format(form_name))
 
         # rfid_sessions = self.banner.get_sessions_for_user(session.get('username'))
-        # return render_template('index.html', **locals())
+        # return render_template('stream.html', **locals())
         return redirect(url_for('View:index'))
 
     @route('/delete-session', methods=['POST'])
@@ -141,7 +141,7 @@ class View(FlaskView):
             return abort(403)
         return render_template('scan_session.html', **locals())
 
-    @route('/no-cas/verify-scanner', methods=['post'])
+    @route('/no-cas/verify-scanner', methods=['get','post'])
     def verify_scanner(self):
         form = request.form
         scan = form.get("scan")
@@ -158,9 +158,13 @@ class View(FlaskView):
                 first_name = user_data.get('first_name')
                 last_name = user_data.get('last_name')
 
-                self.banner.scan_user(session_id, card_id, username, first_name, last_name)
+                scan_msg = self.banner.scan_user(session_id, card_id, username, first_name, last_name)
                 alert_type = 'success'
-                alert_message = 'Thank you for signing in, {} {}.'.format(first_name, last_name)
+                if scan_msg == 'check out':
+                    alert_message = 'Thank you for signing out, {} {}.'.format(first_name, last_name)
+                else:
+                    alert_message = 'Thank you for signing in, {} {}.'.format(first_name, last_name)
+            # except what?
             except:
                 if card_id:
                     alert_message = 'ERROR: Failed sign in the user with Card ID, {}'.format(card_id)
@@ -213,6 +217,29 @@ class View(FlaskView):
 
         session_name = '{} {}'.format(scan_session.get('form_name'), datetime.now().strftime('%m/%d/%Y'))
         return self._export_csv(session_data, session_name)
+
+    @route('/stream-session/<session_id>', methods=['GET'])
+    def stream_session(self, session_id):
+        # app.template_folder = 'static/vue'
+
+        # session_data = self.banner.get_session_data_for_csv(session_id)
+        return render_template('stream_session.html', **locals())
+
+    @route('get-checkins/<session_id>', methods=['GET'])
+    def get_checkins(self, session_id):
+
+        session_data = self.banner.get_checkins_for_session(session_id)
+        return {'checkins': session_data}
+
+    @route('update-checkin', methods=['POST'])
+    def update_checkin(self):
+
+        checkin_data = request.json
+        results = self.banner.complete_checkin(checkin_data.get('id'))
+        if len(results):
+            return results[0]
+        else:
+            abort(500)
 
     def _export_csv(self, data, csv_name):
         def generate():

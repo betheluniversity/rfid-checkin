@@ -2,6 +2,10 @@ body {
 	background: #f6f9fa
 }
 
+.selected {
+	background: #ffc600;
+}
+
 .inner {
 	max-width: 1200px;
 	margin: 0 auto;
