@@ -91,3 +91,7 @@ body {
 #offline-data-message {
 	display: none;
 }
+
+.set-width {
+	width: 100%;
+}
